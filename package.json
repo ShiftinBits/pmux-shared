@@ -1,0 +1,25 @@
+{
+  "name": "@pocketmux/shared",
+  "version": "0.1.0",
+  "description": "Shared TypeScript types for the PocketMux wire protocol and signaling messages",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}
