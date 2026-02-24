@@ -1,0 +1,4 @@
+{
+  "type": "kill_session",
+  "session": "$2"
+}

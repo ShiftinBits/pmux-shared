@@ -1,0 +1,5 @@
+{
+  "type": "error",
+  "code": "PANE_NOT_FOUND",
+  "message": "Pane %99 does not exist"
+}
