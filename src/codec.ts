@@ -1,15 +1,15 @@
 /**
  * MessagePack codec for PocketMux wire protocol.
  *
- * Encodes/decodes AgentRequest and AgentEvent messages for transmission
+ * Encodes/decodes HostRequest and HostEvent messages for transmission
  * over the WebRTC DataChannel. Uint8Array fields (terminal I/O) pass
  * through as raw binary — no base64 encoding.
  */
 
 import { encode as msgpackEncode, decode as msgpackDecode } from '@msgpack/msgpack';
-import type { AgentRequest, AgentEvent } from './protocol';
+import type { HostRequest, HostEvent } from './protocol';
 
-const AGENT_REQUEST_TYPES: ReadonlySet<string> = new Set([
+const HOST_REQUEST_TYPES: ReadonlySet<string> = new Set([
   'list_sessions',
   'attach',
   'detach',
@@ -20,7 +20,7 @@ const AGENT_REQUEST_TYPES: ReadonlySet<string> = new Set([
   'ping',
 ]);
 
-const AGENT_EVENT_TYPES: ReadonlySet<string> = new Set([
+const HOST_EVENT_TYPES: ReadonlySet<string> = new Set([
   'sessions',
   'output',
   'attached',
@@ -34,7 +34,7 @@ const AGENT_EVENT_TYPES: ReadonlySet<string> = new Set([
 /**
  * Encode a protocol message to MessagePack binary.
  */
-export function encode(msg: AgentRequest | AgentEvent): Uint8Array {
+export function encode(msg: HostRequest | HostEvent): Uint8Array {
   return msgpackEncode(msg);
 }
 
@@ -42,7 +42,7 @@ export function encode(msg: AgentRequest | AgentEvent): Uint8Array {
  * Decode MessagePack binary to a protocol message.
  * Validates that the decoded value has a recognized `type` field.
  */
-export function decode(data: Uint8Array): AgentRequest | AgentEvent {
+export function decode(data: Uint8Array): HostRequest | HostEvent {
   const decoded = msgpackDecode(data);
 
   if (typeof decoded !== 'object' || decoded === null) {
@@ -60,23 +60,23 @@ export function decode(data: Uint8Array): AgentRequest | AgentEvent {
     throw new Error(`Invalid message: "type" must be a string, got ${typeof type}`);
   }
 
-  if (!AGENT_REQUEST_TYPES.has(type) && !AGENT_EVENT_TYPES.has(type)) {
+  if (!HOST_REQUEST_TYPES.has(type) && !HOST_EVENT_TYPES.has(type)) {
     throw new Error(`Unknown message type: "${type}"`);
   }
 
-  return decoded as AgentRequest | AgentEvent;
+  return decoded as HostRequest | HostEvent;
 }
 
 /**
- * Type guard: returns true if the message is a Mobile → Agent request.
+ * Type guard: returns true if the message is a Mobile → Host request.
  */
-export function isAgentRequest(msg: AgentRequest | AgentEvent): msg is AgentRequest {
-  return AGENT_REQUEST_TYPES.has(msg.type);
+export function isHostRequest(msg: HostRequest | HostEvent): msg is HostRequest {
+  return HOST_REQUEST_TYPES.has(msg.type);
 }
 
 /**
- * Type guard: returns true if the message is an Agent → Mobile event.
+ * Type guard: returns true if the message is a Host → Mobile event.
  */
-export function isAgentEvent(msg: AgentRequest | AgentEvent): msg is AgentEvent {
-  return AGENT_EVENT_TYPES.has(msg.type);
+export function isHostEvent(msg: HostRequest | HostEvent): msg is HostEvent {
+  return HOST_EVENT_TYPES.has(msg.type);
 }

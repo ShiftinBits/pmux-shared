@@ -1,7 +1,7 @@
 /**
  * Signaling Message Types — Cloudflare Durable Object WebSocket Protocol
  *
- * These messages flow between clients (agent/mobile) and the signaling
+ * These messages flow between clients (host/mobile) and the signaling
  * Durable Object over WebSocket. Used for auth, presence, and WebRTC
  * session establishment (SDP/ICE relay).
  */
@@ -50,13 +50,14 @@ export type SignalingClientMessage =
 
 // === Server → Client Messages ===
 
-export interface AgentOnlineMessage {
-  type: 'agent_online';
+export interface HostOnlineMessage {
+  type: 'host_online';
   deviceId: string;
+  name?: string;
 }
 
-export interface AgentOfflineMessage {
-  type: 'agent_offline';
+export interface HostOfflineMessage {
+  type: 'host_offline';
   deviceId: string;
 }
 
@@ -65,5 +66,5 @@ export type SignalingServerMessage =
   | SdpOfferMessage
   | SdpAnswerMessage
   | IceCandidateMessage
-  | AgentOnlineMessage
-  | AgentOfflineMessage;
+  | HostOnlineMessage
+  | HostOfflineMessage;

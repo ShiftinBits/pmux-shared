@@ -2,7 +2,7 @@
  * Common Types — Shared across all PocketMux packages
  */
 
-export type DeviceType = 'agent' | 'mobile';
+export type DeviceType = 'host' | 'mobile';
 
 export interface DeviceInfo {
   id: string;
@@ -15,8 +15,8 @@ export interface DeviceInfo {
 
 export interface PairingData {
   pairingCode: string;
-  agentX25519PublicKey: string;
-  agentDeviceId: string;
+  hostX25519PublicKey: string;
+  hostDeviceId: string;
   serverUrl: string;
 }
 

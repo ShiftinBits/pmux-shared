@@ -11,18 +11,18 @@
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { encode } from '../../codec';
-import type { AgentRequest, AgentEvent } from '../../protocol';
+import type { HostRequest, HostEvent } from '../../protocol';
 
 const fixturesDir = dirname(new URL(import.meta.url).pathname);
 
 interface Fixture {
   name: string;
-  message: AgentRequest | AgentEvent;
+  message: HostRequest | HostEvent;
   jsonRepr: Record<string, unknown>;
 }
 
 const fixtures: Fixture[] = [
-  // --- AgentRequest fixtures ---
+  // --- HostRequest fixtures ---
   {
     name: 'req_list_sessions',
     message: { type: 'list_sessions' },
@@ -69,7 +69,7 @@ const fixtures: Fixture[] = [
     jsonRepr: { type: 'ping' },
   },
 
-  // --- AgentEvent fixtures ---
+  // --- HostEvent fixtures ---
   {
     name: 'evt_sessions',
     message: {

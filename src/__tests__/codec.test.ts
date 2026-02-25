@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { encode as msgEncode } from '@msgpack/msgpack';
-import { encode, decode, isAgentRequest, isAgentEvent } from '../codec';
+import { encode, decode, isHostRequest, isHostEvent } from '../codec';
 import type {
-  AgentRequest,
-  AgentEvent,
+  HostRequest,
+  HostEvent,
   TmuxSession,
   TmuxWindow,
   TmuxPane,
@@ -11,7 +11,7 @@ import type {
 
 // --- Helpers ---
 
-function roundTrip<T extends AgentRequest | AgentEvent>(msg: T): T {
+function roundTrip<T extends HostRequest | HostEvent>(msg: T): T {
   const encoded = encode(msg);
   expect(encoded).toBeInstanceOf(Uint8Array);
   const decoded = decode(encoded);
@@ -53,30 +53,30 @@ function makeSampleSession(overrides?: Partial<TmuxSession>): TmuxSession {
   };
 }
 
-// --- Round-trip tests for every AgentRequest type ---
+// --- Round-trip tests for every HostRequest type ---
 
-describe('AgentRequest round-trip', () => {
+describe('HostRequest round-trip', () => {
   it('encodes/decodes list_sessions', () => {
-    const msg: AgentRequest = { type: 'list_sessions' };
+    const msg: HostRequest = { type: 'list_sessions' };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });
 
   it('encodes/decodes attach', () => {
-    const msg: AgentRequest = { type: 'attach', paneId: '%3', cols: 120, rows: 40 };
+    const msg: HostRequest = { type: 'attach', paneId: '%3', cols: 120, rows: 40 };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });
 
   it('encodes/decodes detach', () => {
-    const msg: AgentRequest = { type: 'detach' };
+    const msg: HostRequest = { type: 'detach' };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });
 
   it('encodes/decodes input with binary data', () => {
     const data = new Uint8Array([0x1b, 0x5b, 0x41, 0x0a, 0xff, 0x00]);
-    const msg: AgentRequest = { type: 'input', data };
+    const msg: HostRequest = { type: 'input', data };
     const result = roundTrip(msg);
     expect(result.type).toBe('input');
     if (result.type === 'input') {
@@ -86,41 +86,41 @@ describe('AgentRequest round-trip', () => {
   });
 
   it('encodes/decodes resize', () => {
-    const msg: AgentRequest = { type: 'resize', cols: 200, rows: 50 };
+    const msg: HostRequest = { type: 'resize', cols: 200, rows: 50 };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });
 
   it('encodes/decodes create_session with name and command', () => {
-    const msg: AgentRequest = { type: 'create_session', name: 'work', command: 'bash' };
+    const msg: HostRequest = { type: 'create_session', name: 'work', command: 'bash' };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });
 
   it('encodes/decodes create_session without optional fields', () => {
-    const msg: AgentRequest = { type: 'create_session' };
+    const msg: HostRequest = { type: 'create_session' };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });
 
   it('encodes/decodes kill_session', () => {
-    const msg: AgentRequest = { type: 'kill_session', session: '$2' };
+    const msg: HostRequest = { type: 'kill_session', session: '$2' };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });
 
   it('encodes/decodes ping', () => {
-    const msg: AgentRequest = { type: 'ping' };
+    const msg: HostRequest = { type: 'ping' };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });
 });
 
-// --- Round-trip tests for every AgentEvent type ---
+// --- Round-trip tests for every HostEvent type ---
 
-describe('AgentEvent round-trip', () => {
+describe('HostEvent round-trip', () => {
   it('encodes/decodes sessions', () => {
-    const msg: AgentEvent = {
+    const msg: HostEvent = {
       type: 'sessions',
       sessions: [
         makeSampleSession(),
@@ -146,7 +146,7 @@ describe('AgentEvent round-trip', () => {
   });
 
   it('encodes/decodes sessions with empty list', () => {
-    const msg: AgentEvent = { type: 'sessions', sessions: [] };
+    const msg: HostEvent = { type: 'sessions', sessions: [] };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });
@@ -157,7 +157,7 @@ describe('AgentEvent round-trip', () => {
       0x48, 0x65, 0x6c, 0x6c, 0x6f, // "Hello"
       0x1b, 0x5b, 0x30, 0x6d,       // ESC[0m (reset)
     ]);
-    const msg: AgentEvent = { type: 'output', data };
+    const msg: HostEvent = { type: 'output', data };
     const result = roundTrip(msg);
     expect(result.type).toBe('output');
     if (result.type === 'output') {
@@ -167,31 +167,31 @@ describe('AgentEvent round-trip', () => {
   });
 
   it('encodes/decodes attached', () => {
-    const msg: AgentEvent = { type: 'attached', paneId: '%5' };
+    const msg: HostEvent = { type: 'attached', paneId: '%5' };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });
 
   it('encodes/decodes detached', () => {
-    const msg: AgentEvent = { type: 'detached' };
+    const msg: HostEvent = { type: 'detached' };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });
 
   it('encodes/decodes session_created', () => {
-    const msg: AgentEvent = { type: 'session_created', session: '$3', name: 'deploy' };
+    const msg: HostEvent = { type: 'session_created', session: '$3', name: 'deploy' };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });
 
   it('encodes/decodes session_ended', () => {
-    const msg: AgentEvent = { type: 'session_ended', session: '$3' };
+    const msg: HostEvent = { type: 'session_ended', session: '$3' };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });
 
   it('encodes/decodes error', () => {
-    const msg: AgentEvent = {
+    const msg: HostEvent = {
       type: 'error',
       code: 'PANE_NOT_FOUND',
       message: 'Pane %99 does not exist',
@@ -201,7 +201,7 @@ describe('AgentEvent round-trip', () => {
   });
 
   it('encodes/decodes pong', () => {
-    const msg: AgentEvent = { type: 'pong', latency: 42 };
+    const msg: HostEvent = { type: 'pong', latency: 42 };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });
@@ -215,7 +215,7 @@ describe('binary data integrity', () => {
     for (let i = 0; i < 256; i++) {
       data[i] = i;
     }
-    const msg: AgentRequest = { type: 'input', data };
+    const msg: HostRequest = { type: 'input', data };
     const result = roundTrip(msg);
     if (result.type === 'input') {
       expect(result.data).toBeInstanceOf(Uint8Array);
@@ -229,7 +229,7 @@ describe('binary data integrity', () => {
     for (let i = 0; i < 1024; i++) {
       data[i] = i % 256;
     }
-    const msg: AgentEvent = { type: 'output', data };
+    const msg: HostEvent = { type: 'output', data };
     const result = roundTrip(msg);
     if (result.type === 'output') {
       expect(result.data).toBeInstanceOf(Uint8Array);
@@ -239,7 +239,7 @@ describe('binary data integrity', () => {
   });
 
   it('handles empty binary data', () => {
-    const msg: AgentRequest = { type: 'input', data: new Uint8Array(0) };
+    const msg: HostRequest = { type: 'input', data: new Uint8Array(0) };
     const result = roundTrip(msg);
     if (result.type === 'input') {
       expect(result.data).toBeInstanceOf(Uint8Array);
@@ -251,8 +251,8 @@ describe('binary data integrity', () => {
 // --- Type guards ---
 
 describe('type guards', () => {
-  it('isAgentRequest returns true for all request types', () => {
-    const requests: AgentRequest[] = [
+  it('isHostRequest returns true for all request types', () => {
+    const requests: HostRequest[] = [
       { type: 'list_sessions' },
       { type: 'attach', paneId: '%1', cols: 80, rows: 24 },
       { type: 'detach' },
@@ -263,13 +263,13 @@ describe('type guards', () => {
       { type: 'ping' },
     ];
     for (const req of requests) {
-      expect(isAgentRequest(req)).toBe(true);
-      expect(isAgentEvent(req)).toBe(false);
+      expect(isHostRequest(req)).toBe(true);
+      expect(isHostEvent(req)).toBe(false);
     }
   });
 
-  it('isAgentEvent returns true for all event types', () => {
-    const events: AgentEvent[] = [
+  it('isHostEvent returns true for all event types', () => {
+    const events: HostEvent[] = [
       { type: 'sessions', sessions: [] },
       { type: 'output', data: new Uint8Array([1]) },
       { type: 'attached', paneId: '%1' },
@@ -280,8 +280,8 @@ describe('type guards', () => {
       { type: 'pong', latency: 10 },
     ];
     for (const evt of events) {
-      expect(isAgentEvent(evt)).toBe(true);
-      expect(isAgentRequest(evt)).toBe(false);
+      expect(isHostEvent(evt)).toBe(true);
+      expect(isHostRequest(evt)).toBe(false);
     }
   });
 });

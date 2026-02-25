@@ -1,12 +1,12 @@
 /**
  * Wire Protocol Types — PocketMux DataChannel Messages
  *
- * All messages between mobile app and agent flow over the WebRTC DataChannel,
+ * All messages between mobile app and host flow over the WebRTC DataChannel,
  * serialized with MessagePack. These types are the contract between the
- * TypeScript packages (server, mobile) and the Go agent (which mirrors them).
+ * TypeScript packages (server, mobile) and the Go host agent (which mirrors them).
  */
 
-// === Mobile → Agent (Requests) ===
+// === Mobile → Host (Requests) ===
 
 export interface ListSessionsRequest {
   type: 'list_sessions';
@@ -49,7 +49,7 @@ export interface PingRequest {
   type: 'ping';
 }
 
-export type AgentRequest =
+export type HostRequest =
   | ListSessionsRequest
   | AttachRequest
   | DetachRequest
@@ -59,7 +59,7 @@ export type AgentRequest =
   | KillSessionRequest
   | PingRequest;
 
-// === Agent → Mobile (Events) ===
+// === Host → Mobile (Events) ===
 
 export interface SessionsEvent {
   type: 'sessions';
@@ -102,7 +102,7 @@ export interface PongEvent {
   latency: number;
 }
 
-export type AgentEvent =
+export type HostEvent =
   | SessionsEvent
   | OutputEvent
   | AttachedEvent
