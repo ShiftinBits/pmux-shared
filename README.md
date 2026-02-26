@@ -10,7 +10,7 @@ Shared TypeScript types for the PocketMux wire protocol and signaling messages.
 
 ## Usage
 
-This package is consumed via pnpm workspace link by:
+This package is consumed via npm workspace link by:
 
 - **`@pocketmux/server`** — Cloudflare Worker signaling server
 - **`packages/mobile`** — React Native mobile app
@@ -20,8 +20,8 @@ The Go agent (`pmux-agent`) mirrors these types manually in Go structs.
 ## Build
 
 ```bash
-pnpm build    # compiles TypeScript to dist/
-pnpm clean    # removes dist/
+npm run build    # compiles TypeScript to dist/
+npm run clean    # removes dist/
 ```
 
 ## License

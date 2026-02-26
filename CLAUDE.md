@@ -14,6 +14,6 @@ This is the **shared types package** for PocketMux. It contains TypeScript type 
 ## Build
 
 ```bash
-pnpm build    # tsc → dist/
-pnpm clean    # rm -rf dist/
+npm run build    # tsc → dist/
+npm run clean    # rm -rf dist/
 ```
