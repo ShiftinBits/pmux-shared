@@ -61,10 +61,24 @@ export interface HostOfflineMessage {
   deviceId: string;
 }
 
+export interface DeviceUnpairedMessage {
+  type: 'device_unpaired';
+  reason: 'replaced_by_new_pairing';
+  hostDeviceId: string;
+  hostName?: string;
+}
+
+export interface ConnectionRejectedMessage {
+  type: 'connection_rejected';
+  reason: 'not_paired' | 'already_connected';
+}
+
 export type SignalingServerMessage =
   | ConnectRequestMessage
   | SdpOfferMessage
   | SdpAnswerMessage
   | IceCandidateMessage
   | HostOnlineMessage
-  | HostOfflineMessage;
+  | HostOfflineMessage
+  | DeviceUnpairedMessage
+  | ConnectionRejectedMessage;

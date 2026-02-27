@@ -6,7 +6,6 @@ export type DeviceType = 'host' | 'mobile';
 
 export interface DeviceInfo {
   id: string;
-  userId: string;
   publicKey: string;
   deviceType: DeviceType;
   name: string;
