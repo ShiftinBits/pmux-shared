@@ -34,12 +34,6 @@ export interface ResizeRequest {
   rows: number;
 }
 
-export interface CreateSessionRequest {
-  type: 'create_session';
-  name?: string;
-  command?: string;
-}
-
 export interface KillSessionRequest {
   type: 'kill_session';
   session: string;
@@ -55,7 +49,6 @@ export type HostRequest =
   | DetachRequest
   | InputRequest
   | ResizeRequest
-  | CreateSessionRequest
   | KillSessionRequest
   | PingRequest;
 
@@ -80,12 +73,6 @@ export interface DetachedEvent {
   type: 'detached';
 }
 
-export interface SessionCreatedEvent {
-  type: 'session_created';
-  session: string;
-  name: string;
-}
-
 export interface SessionEndedEvent {
   type: 'session_ended';
   session: string;
@@ -107,7 +94,6 @@ export type HostEvent =
   | OutputEvent
   | AttachedEvent
   | DetachedEvent
-  | SessionCreatedEvent
   | SessionEndedEvent
   | ErrorEvent
   | PongEvent;

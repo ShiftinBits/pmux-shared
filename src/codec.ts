@@ -15,7 +15,6 @@ const HOST_REQUEST_TYPES: ReadonlySet<string> = new Set([
   'detach',
   'input',
   'resize',
-  'create_session',
   'kill_session',
   'ping',
 ]);
@@ -25,7 +24,6 @@ const HOST_EVENT_TYPES: ReadonlySet<string> = new Set([
   'output',
   'attached',
   'detached',
-  'session_created',
   'session_ended',
   'error',
   'pong',

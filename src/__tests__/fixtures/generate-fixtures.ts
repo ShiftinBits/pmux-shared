@@ -49,16 +49,6 @@ const fixtures: Fixture[] = [
     jsonRepr: { type: 'resize', cols: 200, rows: 50 },
   },
   {
-    name: 'req_create_session',
-    message: { type: 'create_session', name: 'work', command: 'bash' },
-    jsonRepr: { type: 'create_session', name: 'work', command: 'bash' },
-  },
-  {
-    name: 'req_create_session_minimal',
-    message: { type: 'create_session' },
-    jsonRepr: { type: 'create_session' },
-  },
-  {
     name: 'req_kill_session',
     message: { type: 'kill_session', session: '$2' },
     jsonRepr: { type: 'kill_session', session: '$2' },
@@ -158,11 +148,6 @@ const fixtures: Fixture[] = [
     name: 'evt_detached',
     message: { type: 'detached' },
     jsonRepr: { type: 'detached' },
-  },
-  {
-    name: 'evt_session_created',
-    message: { type: 'session_created', session: '$3', name: 'deploy' },
-    jsonRepr: { type: 'session_created', session: '$3', name: 'deploy' },
   },
   {
     name: 'evt_session_ended',

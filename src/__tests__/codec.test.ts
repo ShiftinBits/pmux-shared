@@ -91,18 +91,6 @@ describe('HostRequest round-trip', () => {
     expect(result).toEqual(msg);
   });
 
-  it('encodes/decodes create_session with name and command', () => {
-    const msg: HostRequest = { type: 'create_session', name: 'work', command: 'bash' };
-    const result = roundTrip(msg);
-    expect(result).toEqual(msg);
-  });
-
-  it('encodes/decodes create_session without optional fields', () => {
-    const msg: HostRequest = { type: 'create_session' };
-    const result = roundTrip(msg);
-    expect(result).toEqual(msg);
-  });
-
   it('encodes/decodes kill_session', () => {
     const msg: HostRequest = { type: 'kill_session', session: '$2' };
     const result = roundTrip(msg);
@@ -174,12 +162,6 @@ describe('HostEvent round-trip', () => {
 
   it('encodes/decodes detached', () => {
     const msg: HostEvent = { type: 'detached' };
-    const result = roundTrip(msg);
-    expect(result).toEqual(msg);
-  });
-
-  it('encodes/decodes session_created', () => {
-    const msg: HostEvent = { type: 'session_created', session: '$3', name: 'deploy' };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });
@@ -258,7 +240,6 @@ describe('type guards', () => {
       { type: 'detach' },
       { type: 'input', data: new Uint8Array([1]) },
       { type: 'resize', cols: 80, rows: 24 },
-      { type: 'create_session' },
       { type: 'kill_session', session: '$1' },
       { type: 'ping' },
     ];
@@ -274,7 +255,6 @@ describe('type guards', () => {
       { type: 'output', data: new Uint8Array([1]) },
       { type: 'attached', paneId: '%1' },
       { type: 'detached' },
-      { type: 'session_created', session: '$1', name: 'test' },
       { type: 'session_ended', session: '$1' },
       { type: 'error', code: 'ERR', message: 'fail' },
       { type: 'pong', latency: 10 },
