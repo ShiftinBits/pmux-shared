@@ -1,0 +1,7 @@
+{
+  "type": "attach",
+  "paneId": "%3",
+  "cols": 120,
+  "rows": 40,
+  "reattach": true
+}

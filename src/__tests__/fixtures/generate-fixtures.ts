@@ -34,6 +34,11 @@ const fixtures: Fixture[] = [
     jsonRepr: { type: 'attach', paneId: '%3', cols: 120, rows: 40 },
   },
   {
+    name: 'req_attach_reattach',
+    message: { type: 'attach', paneId: '%3', cols: 120, rows: 40, reattach: true },
+    jsonRepr: { type: 'attach', paneId: '%3', cols: 120, rows: 40, reattach: true },
+  },
+  {
     name: 'req_detach',
     message: { type: 'detach' },
     jsonRepr: { type: 'detach' },
