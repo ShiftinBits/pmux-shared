@@ -17,6 +17,7 @@ export interface AttachRequest {
   paneId: string;
   cols: number;
   rows: number;
+  reattach?: boolean;
 }
 
 export interface DetachRequest {

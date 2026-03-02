@@ -68,6 +68,12 @@ describe('HostRequest round-trip', () => {
     expect(result).toEqual(msg);
   });
 
+  it('encodes/decodes attach with reattach flag', () => {
+    const msg: HostRequest = { type: 'attach', paneId: '%3', cols: 120, rows: 40, reattach: true };
+    const result = roundTrip(msg);
+    expect(result).toEqual(msg);
+  });
+
   it('encodes/decodes detach', () => {
     const msg: HostRequest = { type: 'detach' };
     const result = roundTrip(msg);
