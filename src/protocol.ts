@@ -79,6 +79,11 @@ export interface SessionEndedEvent {
   session: string;
 }
 
+export interface PaneClosedEvent {
+  type: 'pane_closed';
+  paneId: string;
+}
+
 export interface ErrorEvent {
   type: 'error';
   code: string;
@@ -96,6 +101,7 @@ export type HostEvent =
   | AttachedEvent
   | DetachedEvent
   | SessionEndedEvent
+  | PaneClosedEvent
   | ErrorEvent
   | PongEvent;
 

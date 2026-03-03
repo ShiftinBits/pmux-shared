@@ -160,6 +160,11 @@ const fixtures: Fixture[] = [
     jsonRepr: { type: 'session_ended', session: '$3' },
   },
   {
+    name: 'evt_pane_closed',
+    message: { type: 'pane_closed', paneId: '%7' } as HostEvent,
+    jsonRepr: { type: 'pane_closed', paneId: '%7' },
+  },
+  {
     name: 'evt_error',
     message: { type: 'error', code: 'PANE_NOT_FOUND', message: 'Pane %99 does not exist' },
     jsonRepr: { type: 'error', code: 'PANE_NOT_FOUND', message: 'Pane %99 does not exist' },
