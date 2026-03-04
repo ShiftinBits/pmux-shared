@@ -44,8 +44,8 @@ function assertString(msg: Record<string, unknown>, type: string, field: string)
 }
 
 function assertNumber(msg: Record<string, unknown>, type: string, field: string): void {
-  if (typeof msg[field] !== 'number') {
-    throw new Error(`${type}: "${field}" must be a number`);
+  if (typeof msg[field] !== 'number' || !Number.isFinite(msg[field] as number)) {
+    throw new Error(`${type}: "${field}" must be a finite number`);
   }
 }
 
@@ -77,6 +77,9 @@ function validateFields(msg: Record<string, unknown>): void {
       assertString(msg, 'attach', 'paneId');
       assertNumber(msg, 'attach', 'cols');
       assertNumber(msg, 'attach', 'rows');
+      if ('reattach' in msg && typeof msg['reattach'] !== 'boolean') {
+        throw new Error('attach: "reattach" must be a boolean');
+      }
       break;
 
     case 'input':

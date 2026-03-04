@@ -335,17 +335,37 @@ describe('decode structural validation', () => {
 
     it('rejects missing cols', () => {
       expect(() => decodeMalformed({ type: 'attach', paneId: '%1', rows: 24 }))
-        .toThrow('attach: "cols" must be a number');
+        .toThrow('attach: "cols" must be a finite number');
     });
 
     it('rejects non-number cols', () => {
       expect(() => decodeMalformed({ type: 'attach', paneId: '%1', cols: '80', rows: 24 }))
-        .toThrow('attach: "cols" must be a number');
+        .toThrow('attach: "cols" must be a finite number');
     });
 
     it('rejects missing rows', () => {
       expect(() => decodeMalformed({ type: 'attach', paneId: '%1', cols: 80 }))
-        .toThrow('attach: "rows" must be a number');
+        .toThrow('attach: "rows" must be a finite number');
+    });
+
+    it('rejects non-boolean reattach', () => {
+      expect(() => decodeMalformed({ type: 'attach', paneId: '%1', cols: 80, rows: 24, reattach: 'yes' }))
+        .toThrow('attach: "reattach" must be a boolean');
+    });
+
+    it('accepts valid reattach boolean', () => {
+      expect(() => decodeMalformed({ type: 'attach', paneId: '%1', cols: 80, rows: 24, reattach: true }))
+        .not.toThrow();
+    });
+
+    it('rejects NaN cols', () => {
+      expect(() => decodeMalformed({ type: 'attach', paneId: '%1', cols: NaN, rows: 24 }))
+        .toThrow('attach: "cols" must be a finite number');
+    });
+
+    it('rejects Infinity rows', () => {
+      expect(() => decodeMalformed({ type: 'attach', paneId: '%1', cols: 80, rows: Infinity }))
+        .toThrow('attach: "rows" must be a finite number');
     });
   });
 
@@ -369,12 +389,12 @@ describe('decode structural validation', () => {
   describe('resize', () => {
     it('rejects missing cols', () => {
       expect(() => decodeMalformed({ type: 'resize', rows: 24 }))
-        .toThrow('resize: "cols" must be a number');
+        .toThrow('resize: "cols" must be a finite number');
     });
 
     it('rejects missing rows', () => {
       expect(() => decodeMalformed({ type: 'resize', cols: 80 }))
-        .toThrow('resize: "rows" must be a number');
+        .toThrow('resize: "rows" must be a finite number');
     });
   });
 
@@ -452,12 +472,12 @@ describe('decode structural validation', () => {
   describe('pong', () => {
     it('rejects missing latency', () => {
       expect(() => decodeMalformed({ type: 'pong' }))
-        .toThrow('pong: "latency" must be a number');
+        .toThrow('pong: "latency" must be a finite number');
     });
 
     it('rejects non-number latency', () => {
       expect(() => decodeMalformed({ type: 'pong', latency: '42' }))
-        .toThrow('pong: "latency" must be a number');
+        .toThrow('pong: "latency" must be a finite number');
     });
   });
 
