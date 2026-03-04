@@ -193,6 +193,12 @@ describe('HostEvent round-trip', () => {
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });
+
+  it('encodes/decodes pane_closed', () => {
+    const msg: HostEvent = { type: 'pane_closed', paneId: '%7' };
+    const result = roundTrip(msg);
+    expect(result).toEqual(msg);
+  });
 });
 
 // --- Binary data integrity ---
@@ -264,6 +270,7 @@ describe('type guards', () => {
       { type: 'session_ended', session: '$1' },
       { type: 'error', code: 'ERR', message: 'fail' },
       { type: 'pong', latency: 10 },
+      { type: 'pane_closed', paneId: '%7' },
     ];
     for (const evt of events) {
       expect(isHostEvent(evt)).toBe(true);
