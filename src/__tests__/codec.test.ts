@@ -311,3 +311,173 @@ describe('decode error handling', () => {
     expect(() => decode(new Uint8Array([0xff, 0xfe, 0xfd]))).toThrow();
   });
 });
+
+// --- Structural field validation ---
+
+describe('decode structural validation', () => {
+  // Helper: encode a raw object and decode it, bypassing TS types
+  function decodeMalformed(obj: Record<string, unknown>): void {
+    decode(msgEncode(obj));
+  }
+
+  // -- HostRequest types --
+
+  describe('attach', () => {
+    it('rejects missing paneId', () => {
+      expect(() => decodeMalformed({ type: 'attach', cols: 80, rows: 24 }))
+        .toThrow('attach: "paneId" must be a string');
+    });
+
+    it('rejects non-string paneId', () => {
+      expect(() => decodeMalformed({ type: 'attach', paneId: 123, cols: 80, rows: 24 }))
+        .toThrow('attach: "paneId" must be a string');
+    });
+
+    it('rejects missing cols', () => {
+      expect(() => decodeMalformed({ type: 'attach', paneId: '%1', rows: 24 }))
+        .toThrow('attach: "cols" must be a number');
+    });
+
+    it('rejects non-number cols', () => {
+      expect(() => decodeMalformed({ type: 'attach', paneId: '%1', cols: '80', rows: 24 }))
+        .toThrow('attach: "cols" must be a number');
+    });
+
+    it('rejects missing rows', () => {
+      expect(() => decodeMalformed({ type: 'attach', paneId: '%1', cols: 80 }))
+        .toThrow('attach: "rows" must be a number');
+    });
+  });
+
+  describe('input', () => {
+    it('rejects missing data', () => {
+      expect(() => decodeMalformed({ type: 'input' }))
+        .toThrow('input: "data" must be a Uint8Array');
+    });
+
+    it('rejects non-Uint8Array data', () => {
+      expect(() => decodeMalformed({ type: 'input', data: 'not-binary' }))
+        .toThrow('input: "data" must be a Uint8Array');
+    });
+
+    it('rejects array data (not Uint8Array)', () => {
+      expect(() => decodeMalformed({ type: 'input', data: [1, 2, 3] }))
+        .toThrow('input: "data" must be a Uint8Array');
+    });
+  });
+
+  describe('resize', () => {
+    it('rejects missing cols', () => {
+      expect(() => decodeMalformed({ type: 'resize', rows: 24 }))
+        .toThrow('resize: "cols" must be a number');
+    });
+
+    it('rejects missing rows', () => {
+      expect(() => decodeMalformed({ type: 'resize', cols: 80 }))
+        .toThrow('resize: "rows" must be a number');
+    });
+  });
+
+  describe('kill_session', () => {
+    it('rejects missing session', () => {
+      expect(() => decodeMalformed({ type: 'kill_session' }))
+        .toThrow('kill_session: "session" must be a string');
+    });
+
+    it('rejects non-string session', () => {
+      expect(() => decodeMalformed({ type: 'kill_session', session: 42 }))
+        .toThrow('kill_session: "session" must be a string');
+    });
+  });
+
+  // -- HostEvent types --
+
+  describe('sessions', () => {
+    it('rejects missing sessions field', () => {
+      expect(() => decodeMalformed({ type: 'sessions' }))
+        .toThrow('sessions: "sessions" must be an array');
+    });
+
+    it('rejects non-array sessions field', () => {
+      expect(() => decodeMalformed({ type: 'sessions', sessions: 'not-array' }))
+        .toThrow('sessions: "sessions" must be an array');
+    });
+  });
+
+  describe('output', () => {
+    it('rejects missing data', () => {
+      expect(() => decodeMalformed({ type: 'output' }))
+        .toThrow('output: "data" must be a Uint8Array');
+    });
+
+    it('rejects non-Uint8Array data', () => {
+      expect(() => decodeMalformed({ type: 'output', data: 'text' }))
+        .toThrow('output: "data" must be a Uint8Array');
+    });
+  });
+
+  describe('attached', () => {
+    it('rejects missing paneId', () => {
+      expect(() => decodeMalformed({ type: 'attached' }))
+        .toThrow('attached: "paneId" must be a string');
+    });
+  });
+
+  describe('session_ended', () => {
+    it('rejects missing session', () => {
+      expect(() => decodeMalformed({ type: 'session_ended' }))
+        .toThrow('session_ended: "session" must be a string');
+    });
+  });
+
+  describe('pane_closed', () => {
+    it('rejects missing paneId', () => {
+      expect(() => decodeMalformed({ type: 'pane_closed' }))
+        .toThrow('pane_closed: "paneId" must be a string');
+    });
+  });
+
+  describe('error', () => {
+    it('rejects missing code', () => {
+      expect(() => decodeMalformed({ type: 'error', message: 'fail' }))
+        .toThrow('error: "code" must be a string');
+    });
+
+    it('rejects missing message', () => {
+      expect(() => decodeMalformed({ type: 'error', code: 'ERR' }))
+        .toThrow('error: "message" must be a string');
+    });
+  });
+
+  describe('pong', () => {
+    it('rejects missing latency', () => {
+      expect(() => decodeMalformed({ type: 'pong' }))
+        .toThrow('pong: "latency" must be a number');
+    });
+
+    it('rejects non-number latency', () => {
+      expect(() => decodeMalformed({ type: 'pong', latency: '42' }))
+        .toThrow('pong: "latency" must be a number');
+    });
+  });
+
+  // -- Types with no extra fields (should still pass) --
+
+  describe('type-only messages pass validation', () => {
+    it('list_sessions passes', () => {
+      expect(() => decodeMalformed({ type: 'list_sessions' })).not.toThrow();
+    });
+
+    it('detach passes', () => {
+      expect(() => decodeMalformed({ type: 'detach' })).not.toThrow();
+    });
+
+    it('ping passes', () => {
+      expect(() => decodeMalformed({ type: 'ping' })).not.toThrow();
+    });
+
+    it('detached passes', () => {
+      expect(() => decodeMalformed({ type: 'detached' })).not.toThrow();
+    });
+  });
+});
