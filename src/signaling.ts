@@ -65,7 +65,7 @@ export interface HostOfflineMessage {
 
 export interface DeviceUnpairedMessage {
   type: 'device_unpaired';
-  reason: 'replaced_by_new_pairing';
+  reason: 'replaced_by_new_pairing' | 'host_unpaired';
   hostDeviceId: string;
   hostName?: string;
 }
