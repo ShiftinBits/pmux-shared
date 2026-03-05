@@ -6,7 +6,8 @@ export type DeviceType = 'host' | 'mobile';
 
 export interface DeviceInfo {
   id: string;
-  publicKey: string;
+  /** Ed25519 public key, base64-encoded. Used for device identity verification. */
+  ed25519PublicKey: string;
   deviceType: DeviceType;
   name: string;
   createdAt: number;
