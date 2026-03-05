@@ -9,26 +9,35 @@
 import { encode as msgpackEncode, decode as msgpackDecode } from '@msgpack/msgpack';
 import type { HostRequest, HostEvent } from './protocol';
 
-const HOST_REQUEST_TYPES: ReadonlySet<string> = new Set([
-  'list_sessions',
-  'attach',
-  'detach',
-  'input',
-  'resize',
-  'kill_session',
-  'ping',
-]);
+// Derive type-string literals from the discriminated unions so that adding
+// a new message type to HostRequest/HostEvent without updating these tuples
+// causes a compile-time error instead of a silent runtime mismatch.
+type HostRequestType = HostRequest['type'];
+type HostEventType = HostEvent['type'];
 
-const HOST_EVENT_TYPES: ReadonlySet<string> = new Set([
-  'sessions',
-  'output',
-  'attached',
-  'detached',
-  'session_ended',
-  'pane_closed',
-  'error',
-  'pong',
-]);
+// Compile-time check: ensures every member of union T appears in tuple U.
+// Resolves to `true` when exhaustive; becomes `never` (causing a TS error
+// on the type alias assignment) when a union member is missing.
+type AssertExhaustive<T extends string, U extends readonly T[]> =
+  Exclude<T, U[number]> extends never ? true : never;
+
+const HOST_REQUEST_TYPE_TUPLE = [
+  'list_sessions', 'attach', 'detach', 'input', 'resize', 'kill_session', 'ping',
+] as const satisfies readonly HostRequestType[];
+
+const HOST_EVENT_TYPE_TUPLE = [
+  'sessions', 'output', 'attached', 'detached', 'session_ended', 'pane_closed', 'error', 'pong',
+] as const satisfies readonly HostEventType[];
+
+// These type aliases exist solely to trigger compile errors when a union
+// member is added to protocol.ts but not included in the tuples above.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type _CheckRequests = AssertExhaustive<HostRequestType, typeof HOST_REQUEST_TYPE_TUPLE>;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type _CheckEvents = AssertExhaustive<HostEventType, typeof HOST_EVENT_TYPE_TUPLE>;
+
+const HOST_REQUEST_TYPES: ReadonlySet<string> = new Set(HOST_REQUEST_TYPE_TUPLE);
+const HOST_EVENT_TYPES: ReadonlySet<string> = new Set(HOST_EVENT_TYPE_TUPLE);
 
 /**
  * Encode a protocol message to MessagePack binary.
