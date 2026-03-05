@@ -38,6 +38,8 @@ export interface IceCandidateMessage {
   type: 'ice_candidate';
   candidate: string;
   targetDeviceId: string;
+  sdpMid?: string;
+  sdpMLineIndex?: number;
 }
 
 export type SignalingClientMessage =
