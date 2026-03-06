@@ -76,6 +76,12 @@ export interface ConnectionRejectedMessage {
   reason: 'not_paired' | 'already_connected';
 }
 
+export interface MobileNameUpdatedMessage {
+  type: 'mobile_name_updated';
+  deviceId: string;
+  name: string;
+}
+
 export type SignalingServerMessage =
   | ConnectRequestMessage
   | SdpOfferMessage
@@ -84,4 +90,5 @@ export type SignalingServerMessage =
   | HostOnlineMessage
   | HostOfflineMessage
   | DeviceUnpairedMessage
-  | ConnectionRejectedMessage;
+  | ConnectionRejectedMessage
+  | MobileNameUpdatedMessage;
