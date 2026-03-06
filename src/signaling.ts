@@ -11,6 +11,7 @@
 export interface AuthMessage {
   type: 'auth';
   token: string;
+  name?: string;
 }
 
 export interface PresenceMessage {
