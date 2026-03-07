@@ -110,9 +110,11 @@ export type HostEvent =
 export interface TmuxSession {
   id: string;
   name: string;
-  created: number;
+  /** Unix timestamp in seconds */
+  createdAt: number;
   windows: TmuxWindow[];
-  lastActivity: number;
+  /** Unix timestamp in seconds */
+  lastActivityAt: number;
   attached: boolean;
 }
 
