@@ -73,7 +73,7 @@ const fixtures: Fixture[] = [
         {
           id: '$1',
           name: 'dev',
-          created: 1708700000,
+          createdAt: 1708700000,
           windows: [
             {
               id: '@1',
@@ -92,7 +92,7 @@ const fixtures: Fixture[] = [
               ],
             },
           ],
-          lastActivity: 1708700100,
+          lastActivityAt: 1708700100,
           attached: false,
         },
       ],
@@ -103,7 +103,7 @@ const fixtures: Fixture[] = [
         {
           id: '$1',
           name: 'dev',
-          created: 1708700000,
+          createdAt: 1708700000,
           windows: [
             {
               id: '@1',
@@ -122,7 +122,7 @@ const fixtures: Fixture[] = [
               ],
             },
           ],
-          lastActivity: 1708700100,
+          lastActivityAt: 1708700100,
           attached: false,
         },
       ],

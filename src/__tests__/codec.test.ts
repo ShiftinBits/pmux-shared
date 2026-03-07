@@ -45,9 +45,9 @@ function makeSampleSession(overrides?: Partial<TmuxSession>): TmuxSession {
   return {
     id: '$1',
     name: 'dev',
-    created: 1708700000,
+    createdAt: 1708700000,
     windows: [makeSampleWindow()],
-    lastActivity: 1708700100,
+    lastActivityAt: 1708700100,
     attached: false,
     ...overrides,
   };
