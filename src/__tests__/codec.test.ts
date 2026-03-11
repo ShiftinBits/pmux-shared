@@ -74,6 +74,24 @@ describe('HostRequest round-trip', () => {
     expect(result).toEqual(msg);
   });
 
+  it('encodes/decodes attach with compression', () => {
+    const msg: HostRequest = { type: 'attach', paneId: '%1', cols: 80, rows: 24, compression: 'deflate' };
+    const result = roundTrip(msg);
+    expect(result).toEqual(msg);
+    if (result.type === 'attach') {
+      expect(result.compression).toBe('deflate');
+    }
+  });
+
+  it('encodes/decodes attach without compression (field absent)', () => {
+    const msg: HostRequest = { type: 'attach', paneId: '%1', cols: 80, rows: 24 };
+    const result = roundTrip(msg);
+    expect(result).toEqual(msg);
+    if (result.type === 'attach') {
+      expect(result.compression).toBeUndefined();
+    }
+  });
+
   it('encodes/decodes detach', () => {
     const msg: HostRequest = { type: 'detach' };
     const result = roundTrip(msg);
@@ -164,6 +182,24 @@ describe('HostEvent round-trip', () => {
     const msg: HostEvent = { type: 'attached', paneId: '%5' };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
+  });
+
+  it('encodes/decodes attached with compression', () => {
+    const msg: HostEvent = { type: 'attached', paneId: '%1', compression: 'deflate' };
+    const result = roundTrip(msg);
+    expect(result).toEqual(msg);
+    if (result.type === 'attached') {
+      expect(result.compression).toBe('deflate');
+    }
+  });
+
+  it('encodes/decodes attached without compression (field absent)', () => {
+    const msg: HostEvent = { type: 'attached', paneId: '%1' };
+    const result = roundTrip(msg);
+    expect(result).toEqual(msg);
+    if (result.type === 'attached') {
+      expect(result.compression).toBeUndefined();
+    }
   });
 
   it('encodes/decodes detached', () => {
@@ -367,6 +403,16 @@ describe('decode structural validation', () => {
       expect(() => decodeMalformed({ type: 'attach', paneId: '%1', cols: 80, rows: Infinity }))
         .toThrow('attach: "rows" must be a finite number');
     });
+
+    it('accepts valid compression string', () => {
+      expect(() => decodeMalformed({ type: 'attach', paneId: '%1', cols: 80, rows: 24, compression: 'deflate' }))
+        .not.toThrow();
+    });
+
+    it('rejects non-string compression', () => {
+      expect(() => decodeMalformed({ type: 'attach', paneId: '%1', cols: 80, rows: 24, compression: 123 }))
+        .toThrow('attach: "compression" must be a string');
+    });
   });
 
   describe('input', () => {
@@ -440,6 +486,16 @@ describe('decode structural validation', () => {
     it('rejects missing paneId', () => {
       expect(() => decodeMalformed({ type: 'attached' }))
         .toThrow('attached: "paneId" must be a string');
+    });
+
+    it('accepts valid compression string', () => {
+      expect(() => decodeMalformed({ type: 'attached', paneId: '%1', compression: 'deflate' }))
+        .not.toThrow();
+    });
+
+    it('rejects non-string compression', () => {
+      expect(() => decodeMalformed({ type: 'attached', paneId: '%1', compression: 123 }))
+        .toThrow('attached: "compression" must be a string');
     });
   });
 

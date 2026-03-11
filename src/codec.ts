@@ -89,6 +89,9 @@ function validateFields(msg: Record<string, unknown>): void {
       if ('reattach' in msg && typeof msg['reattach'] !== 'boolean') {
         throw new Error('attach: "reattach" must be a boolean');
       }
+      if ('compression' in msg && typeof msg['compression'] !== 'string') {
+        throw new Error('attach: "compression" must be a string');
+      }
       break;
 
     case 'input':
@@ -118,6 +121,9 @@ function validateFields(msg: Record<string, unknown>): void {
 
     case 'attached':
       assertString(msg, 'attached', 'paneId');
+      if ('compression' in msg && typeof msg['compression'] !== 'string') {
+        throw new Error('attached: "compression" must be a string');
+      }
       break;
 
     case 'session_ended':

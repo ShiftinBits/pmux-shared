@@ -18,6 +18,7 @@ export interface AttachRequest {
   cols: number;
   rows: number;
   reattach?: boolean;
+  compression?: 'deflate';
 }
 
 export interface DetachRequest {
@@ -68,6 +69,7 @@ export interface OutputEvent {
 export interface AttachedEvent {
   type: 'attached';
   paneId: string;
+  compression?: 'deflate';
 }
 
 export interface DetachedEvent {
