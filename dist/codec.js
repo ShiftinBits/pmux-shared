@@ -58,6 +58,9 @@ function validateFields(msg) {
             if ('reattach' in msg && typeof msg['reattach'] !== 'boolean') {
                 throw new Error('attach: "reattach" must be a boolean');
             }
+            if ('compression' in msg && typeof msg['compression'] !== 'string') {
+                throw new Error('attach: "compression" must be a string');
+            }
             break;
         case 'input':
             assertUint8Array(msg, 'input', 'data');
@@ -80,6 +83,9 @@ function validateFields(msg) {
             break;
         case 'attached':
             assertString(msg, 'attached', 'paneId');
+            if ('compression' in msg && typeof msg['compression'] !== 'string') {
+                throw new Error('attached: "compression" must be a string');
+            }
             break;
         case 'session_ended':
             assertString(msg, 'session_ended', 'session');
