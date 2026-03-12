@@ -1,6 +1,6 @@
 # @pocketmux/shared
 
-[![Test Results](https://img.shields.io/github/actions/workflow/status/shiftinbits/pmux-shared/test.yml?branch=main&logo=go&logoColor=white&label=tests)](https://github.com/shiftinbits/pmux-shared/actions/workflows/test.yml?query=branch%3Amain) [![Code Coverage](https://img.shields.io/codecov/c/github/shiftinbits/pmux-shared?logo=codecov&logoColor=white)](https://app.codecov.io/gh/shiftinbits/pmux-shared/) [![Snyk Security Monitored](https://img.shields.io/badge/security-monitored-8A2BE2?logo=snyk)](https://snyk.io/test/github/shiftinbits/pmux-shared) [![License](https://img.shields.io/badge/license-MIT-3DA639?logo=opensourceinitiative&logoColor=white)](LICENSE)
+[![Test Results](https://img.shields.io/github/actions/workflow/status/shiftinbits/pmux-shared/test.yml?branch=main&logo=vitest&logoColor=white&label=tests)](https://github.com/shiftinbits/pmux-shared/actions/workflows/test.yml?query=branch%3Amain) [![Code Coverage](https://img.shields.io/codecov/c/github/shiftinbits/pmux-shared?logo=codecov&logoColor=white)](https://app.codecov.io/gh/shiftinbits/pmux-shared/) [![Snyk Security Monitored](https://img.shields.io/badge/security-monitored-8A2BE2?logo=snyk)](https://snyk.io/test/github/shiftinbits/pmux-shared) [![License](https://img.shields.io/badge/license-MIT-3DA639?logo=opensourceinitiative&logoColor=white)](LICENSE)
 
 Shared TypeScript library for the pmux wire protocol and signaling messages.
 
