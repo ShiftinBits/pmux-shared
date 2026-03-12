@@ -1,21 +1,14 @@
 # @pocketmux/shared
 
-Shared TypeScript types for the PocketMux wire protocol and signaling messages.
+[![Test Results](https://img.shields.io/github/actions/workflow/status/shiftinbits/pmux-shared/test.yml?branch=main&logo=go&logoColor=white&label=tests)](https://github.com/shiftinbits/pmux-shared/actions/workflows/test.yml?query=branch%3Amain) [![Code Coverage](https://img.shields.io/codecov/c/github/shiftinbits/pmux-shared?logo=codecov&logoColor=white)](https://app.codecov.io/gh/shiftinbits/pmux-shared/) [![Snyk Security Monitored](https://img.shields.io/badge/security-monitored-8A2BE2?logo=snyk)](https://snyk.io/test/github/shiftinbits/pmux-shared) [![License](https://img.shields.io/badge/license-MIT-3DA639?logo=opensourceinitiative&logoColor=white)](LICENSE)
+
+Shared TypeScript library for the pmux wire protocol and signaling messages.
 
 ## What's in here
 
 - **`protocol.ts`** — Wire protocol message types (`AgentRequest`, `AgentEvent`, `TmuxSession`, `TmuxWindow`, `TmuxPane`) for DataChannel communication
 - **`signaling.ts`** — Signaling WebSocket message types for the Cloudflare Durable Object relay
 - **`types.ts`** — Common types (`DeviceType`, `DeviceInfo`, `PairingData`, `TurnCredentials`)
-
-## Usage
-
-This package is consumed via npm workspace link by:
-
-- **`@pocketmux/server`** — Cloudflare Worker signaling server
-- **`packages/mobile`** — React Native mobile app
-
-The Go agent (`pmux-agent`) mirrors these types manually in Go structs.
 
 ## Build
 
