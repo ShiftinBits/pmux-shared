@@ -59,6 +59,10 @@ export type HostRequest =
 export interface SessionsEvent {
   type: 'sessions';
   sessions: TmuxSession[];
+  /** Agent version string (e.g., "1.2.3"). Present when agent supports update checking. */
+  agentVersion?: string;
+  /** Latest available version string if an update is available, undefined otherwise. */
+  updateAvailable?: string;
 }
 
 export interface OutputEvent {
