@@ -1,7 +1,7 @@
 {
   "name": "@pocketmux/shared",
   "version": "0.1.0",
-  "description": "Shared TypeScript types for the PocketMux wire protocol and signaling messages",
+  "description": "Shared TypeScript types for the Pocketmux wire protocol and signaling messages",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

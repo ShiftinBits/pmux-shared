@@ -1,6 +1,6 @@
 # CLAUDE.md — @pocketmux/shared
 
-This is the **shared types package** for PocketMux. It contains TypeScript type definitions only — no runtime code (codec implementation comes in T1.1).
+This is the **shared types package** for Pocketmux. It contains TypeScript type definitions only — no runtime code (codec implementation comes in T1.1).
 
 ## Key Rules
 

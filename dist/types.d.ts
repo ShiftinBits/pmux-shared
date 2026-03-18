@@ -1,5 +1,5 @@
 /**
- * Common Types — Shared across all PocketMux packages
+ * Common Types — Shared across all Pocketmux packages
  */
 export type DeviceType = 'host' | 'mobile';
 export interface DeviceInfo {

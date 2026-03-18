@@ -1,5 +1,5 @@
 /**
- * MessagePack codec for PocketMux wire protocol.
+ * MessagePack codec for Pocketmux wire protocol.
  *
  * Encodes/decodes HostRequest and HostEvent messages for transmission
  * over the WebRTC DataChannel. Uint8Array fields (terminal I/O) pass
