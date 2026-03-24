@@ -14,25 +14,47 @@ const HOST_EVENT_TYPE_TUPLE = [
 ];
 const HOST_REQUEST_TYPES = new Set(HOST_REQUEST_TYPE_TUPLE);
 const HOST_EVENT_TYPES = new Set(HOST_EVENT_TYPE_TUPLE);
+/** Validation limits — aligned with Go agent constants. */
+export const MAX_MESSAGE_SIZE = 1024 * 1024; // 1 MiB — matches Go agent MaxMessageSize
+export const MAX_STRING_ID_LENGTH = 255;
+export const MAX_ERROR_CODE_LENGTH = 255;
+export const MAX_ERROR_MESSAGE_LENGTH = 4096;
+export const MAX_INPUT_SIZE = 16 * 1024;
+export const MAX_OUTPUT_SIZE = 1024 * 1024;
+export const MIN_DIMENSION = 1;
+export const MAX_DIMENSION = 500;
 /**
  * Encode a protocol message to MessagePack binary.
  */
 export function encode(msg) {
     return msgpackEncode(msg);
 }
-function assertString(msg, type, field) {
+function assertString(msg, type, field, maxLength = MAX_STRING_ID_LENGTH) {
     if (typeof msg[field] !== 'string') {
         throw new Error(`${type}: "${field}" must be a string`);
     }
+    if (msg[field].length > maxLength) {
+        throw new Error(`${type}: "${field}" exceeds maximum length of ${maxLength}`);
+    }
 }
-function assertNumber(msg, type, field) {
+function assertNumber(msg, type, field, min, max) {
     if (typeof msg[field] !== 'number' || !Number.isFinite(msg[field])) {
         throw new Error(`${type}: "${field}" must be a finite number`);
     }
+    const val = msg[field];
+    if (min !== undefined && val < min) {
+        throw new Error(`${type}: "${field}" must be between ${min} and ${max ?? 'Infinity'}`);
+    }
+    if (max !== undefined && val > max) {
+        throw new Error(`${type}: "${field}" must be between ${min ?? '-Infinity'} and ${max}`);
+    }
 }
-function assertUint8Array(msg, type, field) {
+function assertUint8Array(msg, type, field, maxSize) {
     if (!(msg[field] instanceof Uint8Array)) {
         throw new Error(`${type}: "${field}" must be a Uint8Array`);
+    }
+    if (maxSize !== undefined && msg[field].length > maxSize) {
+        throw new Error(`${type}: "${field}" exceeds maximum size of ${maxSize} bytes`);
     }
 }
 function assertArray(msg, type, field) {
@@ -53,8 +75,8 @@ function validateFields(msg) {
             break;
         case 'attach':
             assertString(msg, 'attach', 'paneId');
-            assertNumber(msg, 'attach', 'cols');
-            assertNumber(msg, 'attach', 'rows');
+            assertNumber(msg, 'attach', 'cols', MIN_DIMENSION, MAX_DIMENSION);
+            assertNumber(msg, 'attach', 'rows', MIN_DIMENSION, MAX_DIMENSION);
             if ('reattach' in msg && typeof msg['reattach'] !== 'boolean') {
                 throw new Error('attach: "reattach" must be a boolean');
             }
@@ -63,11 +85,11 @@ function validateFields(msg) {
             }
             break;
         case 'input':
-            assertUint8Array(msg, 'input', 'data');
+            assertUint8Array(msg, 'input', 'data', MAX_INPUT_SIZE);
             break;
         case 'resize':
-            assertNumber(msg, 'resize', 'cols');
-            assertNumber(msg, 'resize', 'rows');
+            assertNumber(msg, 'resize', 'cols', MIN_DIMENSION, MAX_DIMENSION);
+            assertNumber(msg, 'resize', 'rows', MIN_DIMENSION, MAX_DIMENSION);
             break;
         case 'kill_session':
             assertString(msg, 'kill_session', 'session');
@@ -79,7 +101,7 @@ function validateFields(msg) {
             assertArray(msg, 'sessions', 'sessions');
             break;
         case 'output':
-            assertUint8Array(msg, 'output', 'data');
+            assertUint8Array(msg, 'output', 'data', MAX_OUTPUT_SIZE);
             break;
         case 'attached':
             assertString(msg, 'attached', 'paneId');
@@ -94,11 +116,11 @@ function validateFields(msg) {
             assertString(msg, 'pane_closed', 'paneId');
             break;
         case 'error':
-            assertString(msg, 'error', 'code');
-            assertString(msg, 'error', 'message');
+            assertString(msg, 'error', 'code', MAX_ERROR_CODE_LENGTH);
+            assertString(msg, 'error', 'message', MAX_ERROR_MESSAGE_LENGTH);
             break;
         case 'pong':
-            assertNumber(msg, 'pong', 'latency');
+            assertNumber(msg, 'pong', 'latency', 0);
             break;
     }
 }
@@ -108,6 +130,9 @@ function validateFields(msg) {
  * and that all required structural fields are present with correct types.
  */
 export function decode(data) {
+    if (data.length > MAX_MESSAGE_SIZE) {
+        throw new Error(`Message size ${data.length} exceeds maximum ${MAX_MESSAGE_SIZE}`);
+    }
     const decoded = msgpackDecode(data);
     if (typeof decoded !== 'object' || decoded === null) {
         throw new Error('Invalid message: expected an object');

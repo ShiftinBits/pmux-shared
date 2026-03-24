@@ -6,6 +6,15 @@
  * through as raw binary — no base64 encoding.
  */
 import type { HostRequest, HostEvent } from './protocol';
+/** Validation limits — aligned with Go agent constants. */
+export declare const MAX_MESSAGE_SIZE: number;
+export declare const MAX_STRING_ID_LENGTH = 255;
+export declare const MAX_ERROR_CODE_LENGTH = 255;
+export declare const MAX_ERROR_MESSAGE_LENGTH = 4096;
+export declare const MAX_INPUT_SIZE: number;
+export declare const MAX_OUTPUT_SIZE: number;
+export declare const MIN_DIMENSION = 1;
+export declare const MAX_DIMENSION = 500;
 /**
  * Encode a protocol message to MessagePack binary.
  */
