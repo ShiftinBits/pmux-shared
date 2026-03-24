@@ -346,6 +346,11 @@ describe('decode error handling', () => {
   it('rejects malformed msgpack data', () => {
     expect(() => decode(new Uint8Array([0xff, 0xfe, 0xfd]))).toThrow();
   });
+
+  it('rejects oversized raw message', () => {
+    const huge = new Uint8Array(1024 * 1024 + 1);
+    expect(() => decode(huge)).toThrow('exceeds maximum');
+  });
 });
 
 // --- Structural field validation ---
@@ -614,14 +619,17 @@ describe('decode structural validation', () => {
 
     it('rejects oversized output data', () => {
       const huge = new Uint8Array(1024 * 1024 + 1);
+      // The msgpack-encoded envelope exceeds MAX_MESSAGE_SIZE, so the envelope
+      // check fires first with "exceeds maximum" (before the field-level check).
       expect(() => decodeMalformed({ type: 'output', data: huge }))
-        .toThrow('exceeds maximum size');
+        .toThrow('exceeds maximum');
     });
 
     it('accepts data within bounds', () => {
       expect(() => decodeMalformed({ type: 'input', data: new Uint8Array(16 * 1024) }))
         .not.toThrow();
-      expect(() => decodeMalformed({ type: 'output', data: new Uint8Array(1024 * 1024) }))
+      // Use slightly under MAX_OUTPUT_SIZE to leave room for msgpack envelope framing.
+      expect(() => decodeMalformed({ type: 'output', data: new Uint8Array(1024 * 1024 - 100) }))
         .not.toThrow();
     });
   });

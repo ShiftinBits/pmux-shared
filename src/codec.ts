@@ -40,6 +40,7 @@ const HOST_REQUEST_TYPES: ReadonlySet<string> = new Set(HOST_REQUEST_TYPE_TUPLE)
 const HOST_EVENT_TYPES: ReadonlySet<string> = new Set(HOST_EVENT_TYPE_TUPLE);
 
 /** Validation limits — aligned with Go agent constants. */
+export const MAX_MESSAGE_SIZE = 1024 * 1024; // 1 MiB — matches Go agent MaxMessageSize
 export const MAX_STRING_ID_LENGTH = 255;
 export const MAX_ERROR_CODE_LENGTH = 255;
 export const MAX_ERROR_MESSAGE_LENGTH = 4096;
@@ -182,6 +183,12 @@ function validateFields(msg: Record<string, unknown>): void {
  * and that all required structural fields are present with correct types.
  */
 export function decode(data: Uint8Array): HostRequest | HostEvent {
+  if (data.length > MAX_MESSAGE_SIZE) {
+    throw new Error(
+      `Message size ${data.length} exceeds maximum ${MAX_MESSAGE_SIZE}`,
+    );
+  }
+
   const decoded = msgpackDecode(data);
 
   if (typeof decoded !== 'object' || decoded === null) {
