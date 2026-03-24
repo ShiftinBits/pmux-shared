@@ -537,6 +537,95 @@ describe('decode structural validation', () => {
     });
   });
 
+  // -- Size/range bounds --
+
+  describe('string length bounds', () => {
+    it('rejects oversized paneId in attach', () => {
+      const longId = 'x'.repeat(256);
+      expect(() => decodeMalformed({ type: 'attach', paneId: longId, cols: 80, rows: 24 }))
+        .toThrow('exceeds maximum length');
+    });
+
+    it('rejects oversized session in kill_session', () => {
+      const longSession = 's'.repeat(256);
+      expect(() => decodeMalformed({ type: 'kill_session', session: longSession }))
+        .toThrow('exceeds maximum length');
+    });
+
+    it('rejects oversized error code', () => {
+      const longCode = 'E'.repeat(256);
+      expect(() => decodeMalformed({ type: 'error', code: longCode, message: 'ok' }))
+        .toThrow('exceeds maximum length');
+    });
+
+    it('rejects oversized error message', () => {
+      const longMsg = 'm'.repeat(4097);
+      expect(() => decodeMalformed({ type: 'error', code: 'ERR', message: longMsg }))
+        .toThrow('exceeds maximum length');
+    });
+
+    it('accepts strings within bounds', () => {
+      expect(() => decodeMalformed({ type: 'attach', paneId: '%1', cols: 80, rows: 24 }))
+        .not.toThrow();
+      expect(() => decodeMalformed({ type: 'error', code: 'PANE_NOT_FOUND', message: 'Pane %99 does not exist' }))
+        .not.toThrow();
+    });
+  });
+
+  describe('numeric range bounds', () => {
+    it('rejects cols=0 in attach', () => {
+      expect(() => decodeMalformed({ type: 'attach', paneId: '%1', cols: 0, rows: 24 }))
+        .toThrow('must be between');
+    });
+
+    it('rejects negative rows in attach', () => {
+      expect(() => decodeMalformed({ type: 'attach', paneId: '%1', cols: 80, rows: -1 }))
+        .toThrow('must be between');
+    });
+
+    it('rejects cols > 500 in resize', () => {
+      expect(() => decodeMalformed({ type: 'resize', cols: 501, rows: 24 }))
+        .toThrow('must be between');
+    });
+
+    it('rejects rows > 500 in resize', () => {
+      expect(() => decodeMalformed({ type: 'resize', cols: 80, rows: 501 }))
+        .toThrow('must be between');
+    });
+
+    it('rejects negative latency in pong', () => {
+      expect(() => decodeMalformed({ type: 'pong', latency: -1 }))
+        .toThrow('must be between');
+    });
+
+    it('accepts boundary values', () => {
+      expect(() => decodeMalformed({ type: 'resize', cols: 1, rows: 1 })).not.toThrow();
+      expect(() => decodeMalformed({ type: 'resize', cols: 500, rows: 500 })).not.toThrow();
+      expect(() => decodeMalformed({ type: 'pong', latency: 0 })).not.toThrow();
+    });
+  });
+
+  describe('binary size bounds', () => {
+    it('rejects oversized input data', () => {
+      const huge = new Uint8Array(16 * 1024 + 1);
+      expect(() => decodeMalformed({ type: 'input', data: huge }))
+        .toThrow('exceeds maximum size');
+    });
+
+    it('rejects oversized output data', () => {
+      const huge = new Uint8Array(1024 * 1024 + 1);
+      expect(() => decodeMalformed({ type: 'output', data: huge }))
+        .toThrow('exceeds maximum size');
+    });
+
+    it('accepts data within bounds', () => {
+      expect(() => decodeMalformed({ type: 'input', data: new Uint8Array(16 * 1024) }))
+        .not.toThrow();
+      expect(() => decodeMalformed({ type: 'output', data: new Uint8Array(1024 * 1024) }))
+        .not.toThrow();
+    });
+  });
+
   // -- Types with no extra fields (should still pass) --
 
   describe('type-only messages pass validation', () => {

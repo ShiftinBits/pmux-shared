@@ -39,6 +39,15 @@ type _CheckEvents = AssertExhaustive<HostEventType, typeof HOST_EVENT_TYPE_TUPLE
 const HOST_REQUEST_TYPES: ReadonlySet<string> = new Set(HOST_REQUEST_TYPE_TUPLE);
 const HOST_EVENT_TYPES: ReadonlySet<string> = new Set(HOST_EVENT_TYPE_TUPLE);
 
+/** Validation limits — aligned with Go agent constants. */
+export const MAX_STRING_ID_LENGTH = 255;
+export const MAX_ERROR_CODE_LENGTH = 255;
+export const MAX_ERROR_MESSAGE_LENGTH = 4096;
+export const MAX_INPUT_SIZE = 16 * 1024;
+export const MAX_OUTPUT_SIZE = 1024 * 1024;
+export const MIN_DIMENSION = 1;
+export const MAX_DIMENSION = 500;
+
 /**
  * Encode a protocol message to MessagePack binary.
  */
@@ -46,21 +55,43 @@ export function encode(msg: HostRequest | HostEvent): Uint8Array {
   return msgpackEncode(msg);
 }
 
-function assertString(msg: Record<string, unknown>, type: string, field: string): void {
+function assertString(
+  msg: Record<string, unknown>, type: string, field: string,
+  maxLength: number = MAX_STRING_ID_LENGTH,
+): void {
   if (typeof msg[field] !== 'string') {
     throw new Error(`${type}: "${field}" must be a string`);
   }
-}
-
-function assertNumber(msg: Record<string, unknown>, type: string, field: string): void {
-  if (typeof msg[field] !== 'number' || !Number.isFinite(msg[field] as number)) {
-    throw new Error(`${type}: "${field}" must be a finite number`);
+  if ((msg[field] as string).length > maxLength) {
+    throw new Error(`${type}: "${field}" exceeds maximum length of ${maxLength}`);
   }
 }
 
-function assertUint8Array(msg: Record<string, unknown>, type: string, field: string): void {
+function assertNumber(
+  msg: Record<string, unknown>, type: string, field: string,
+  min?: number, max?: number,
+): void {
+  if (typeof msg[field] !== 'number' || !Number.isFinite(msg[field] as number)) {
+    throw new Error(`${type}: "${field}" must be a finite number`);
+  }
+  const val = msg[field] as number;
+  if (min !== undefined && val < min) {
+    throw new Error(`${type}: "${field}" must be between ${min} and ${max ?? 'Infinity'}`);
+  }
+  if (max !== undefined && val > max) {
+    throw new Error(`${type}: "${field}" must be between ${min ?? '-Infinity'} and ${max}`);
+  }
+}
+
+function assertUint8Array(
+  msg: Record<string, unknown>, type: string, field: string,
+  maxSize?: number,
+): void {
   if (!(msg[field] instanceof Uint8Array)) {
     throw new Error(`${type}: "${field}" must be a Uint8Array`);
+  }
+  if (maxSize !== undefined && (msg[field] as Uint8Array).length > maxSize) {
+    throw new Error(`${type}: "${field}" exceeds maximum size of ${maxSize} bytes`);
   }
 }
 
@@ -84,8 +115,8 @@ function validateFields(msg: Record<string, unknown>): void {
 
     case 'attach':
       assertString(msg, 'attach', 'paneId');
-      assertNumber(msg, 'attach', 'cols');
-      assertNumber(msg, 'attach', 'rows');
+      assertNumber(msg, 'attach', 'cols', MIN_DIMENSION, MAX_DIMENSION);
+      assertNumber(msg, 'attach', 'rows', MIN_DIMENSION, MAX_DIMENSION);
       if ('reattach' in msg && typeof msg['reattach'] !== 'boolean') {
         throw new Error('attach: "reattach" must be a boolean');
       }
@@ -95,12 +126,12 @@ function validateFields(msg: Record<string, unknown>): void {
       break;
 
     case 'input':
-      assertUint8Array(msg, 'input', 'data');
+      assertUint8Array(msg, 'input', 'data', MAX_INPUT_SIZE);
       break;
 
     case 'resize':
-      assertNumber(msg, 'resize', 'cols');
-      assertNumber(msg, 'resize', 'rows');
+      assertNumber(msg, 'resize', 'cols', MIN_DIMENSION, MAX_DIMENSION);
+      assertNumber(msg, 'resize', 'rows', MIN_DIMENSION, MAX_DIMENSION);
       break;
 
     case 'kill_session':
@@ -116,7 +147,7 @@ function validateFields(msg: Record<string, unknown>): void {
       break;
 
     case 'output':
-      assertUint8Array(msg, 'output', 'data');
+      assertUint8Array(msg, 'output', 'data', MAX_OUTPUT_SIZE);
       break;
 
     case 'attached':
@@ -135,12 +166,12 @@ function validateFields(msg: Record<string, unknown>): void {
       break;
 
     case 'error':
-      assertString(msg, 'error', 'code');
-      assertString(msg, 'error', 'message');
+      assertString(msg, 'error', 'code', MAX_ERROR_CODE_LENGTH);
+      assertString(msg, 'error', 'message', MAX_ERROR_MESSAGE_LENGTH);
       break;
 
     case 'pong':
-      assertNumber(msg, 'pong', 'latency');
+      assertNumber(msg, 'pong', 'latency', 0);
       break;
   }
 }
