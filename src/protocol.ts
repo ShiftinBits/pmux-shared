@@ -41,6 +41,10 @@ export interface KillSessionRequest {
   session: string;
 }
 
+export interface CreateSessionRequest {
+  type: 'create_session';
+}
+
 export interface PingRequest {
   type: 'ping';
 }
@@ -52,6 +56,7 @@ export type HostRequest =
   | InputRequest
   | ResizeRequest
   | KillSessionRequest
+  | CreateSessionRequest
   | PingRequest;
 
 // === Host → Mobile (Events) ===
@@ -90,6 +95,11 @@ export interface PaneClosedEvent {
   paneId: string;
 }
 
+export interface SessionCreatedEvent {
+  type: 'session_created';
+  session: TmuxSession;
+}
+
 export interface ErrorEvent {
   type: 'error';
   code: string;
@@ -108,6 +118,7 @@ export type HostEvent =
   | DetachedEvent
   | SessionEndedEvent
   | PaneClosedEvent
+  | SessionCreatedEvent
   | ErrorEvent
   | PongEvent;
 

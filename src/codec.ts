@@ -22,11 +22,11 @@ type AssertExhaustive<T extends string, U extends readonly T[]> =
   Exclude<T, U[number]> extends never ? true : never;
 
 const HOST_REQUEST_TYPE_TUPLE = [
-  'list_sessions', 'attach', 'detach', 'input', 'resize', 'kill_session', 'ping',
+  'list_sessions', 'attach', 'detach', 'input', 'resize', 'kill_session', 'create_session', 'ping',
 ] as const satisfies readonly HostRequestType[];
 
 const HOST_EVENT_TYPE_TUPLE = [
-  'sessions', 'output', 'attached', 'detached', 'session_ended', 'pane_closed', 'error', 'pong',
+  'sessions', 'output', 'attached', 'detached', 'session_ended', 'pane_closed', 'session_created', 'error', 'pong',
 ] as const satisfies readonly HostEventType[];
 
 // These type aliases exist solely to trigger compile errors when a union
@@ -112,6 +112,7 @@ function validateFields(msg: Record<string, unknown>): void {
     case 'list_sessions':
     case 'detach':
     case 'ping':
+    case 'create_session':
       break;
 
     case 'attach':
@@ -164,6 +165,12 @@ function validateFields(msg: Record<string, unknown>): void {
 
     case 'pane_closed':
       assertString(msg, 'pane_closed', 'paneId');
+      break;
+
+    case 'session_created':
+      if (typeof msg['session'] !== 'object' || msg['session'] === null) {
+        throw new Error('session_created: "session" must be an object');
+      }
       break;
 
     case 'error':
