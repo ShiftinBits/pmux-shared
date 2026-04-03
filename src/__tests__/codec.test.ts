@@ -121,6 +121,12 @@ describe('HostRequest round-trip', () => {
     expect(result).toEqual(msg);
   });
 
+  it('encodes/decodes create_session', () => {
+    const msg: HostRequest = { type: 'create_session' };
+    const result = roundTrip(msg);
+    expect(result).toEqual(msg);
+  });
+
   it('encodes/decodes ping', () => {
     const msg: HostRequest = { type: 'ping' };
     const result = roundTrip(msg);
@@ -235,6 +241,15 @@ describe('HostEvent round-trip', () => {
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });
+
+  it('encodes/decodes session_created', () => {
+    const msg: HostEvent = {
+      type: 'session_created',
+      session: makeSampleSession(),
+    };
+    const result = roundTrip(msg);
+    expect(result).toEqual(msg);
+  });
 });
 
 // --- Binary data integrity ---
@@ -289,6 +304,7 @@ describe('type guards', () => {
       { type: 'input', data: new Uint8Array([1]) },
       { type: 'resize', cols: 80, rows: 24 },
       { type: 'kill_session', session: '$1' },
+      { type: 'create_session' },
       { type: 'ping' },
     ];
     for (const req of requests) {
@@ -307,6 +323,7 @@ describe('type guards', () => {
       { type: 'error', code: 'ERR', message: 'fail' },
       { type: 'pong', latency: 10 },
       { type: 'pane_closed', paneId: '%7' },
+      { type: 'session_created', session: makeSampleSession() },
     ];
     for (const evt of events) {
       expect(isHostEvent(evt)).toBe(true);

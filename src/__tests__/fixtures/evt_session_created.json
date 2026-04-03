@@ -1,0 +1,31 @@
+{
+  "type": "session_created",
+  "session": {
+    "id": "$5",
+    "name": "3",
+    "createdAt": 1708700500,
+    "windows": [
+      {
+        "id": "@5",
+        "name": "bash",
+        "index": 0,
+        "active": true,
+        "panes": [
+          {
+            "id": "%5",
+            "index": 0,
+            "active": true,
+            "size": {
+              "cols": 80,
+              "rows": 24
+            },
+            "title": "bash",
+            "currentCommand": "bash"
+          }
+        ]
+      }
+    ],
+    "lastActivityAt": 1708700500,
+    "attached": false
+  }
+}

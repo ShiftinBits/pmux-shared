@@ -63,6 +63,11 @@ const fixtures: Fixture[] = [
     message: { type: 'ping' },
     jsonRepr: { type: 'ping' },
   },
+  {
+    name: 'req_create_session',
+    message: { type: 'create_session' },
+    jsonRepr: { type: 'create_session' },
+  },
 
   // --- HostEvent fixtures ---
   {
@@ -173,6 +178,57 @@ const fixtures: Fixture[] = [
     name: 'evt_pong',
     message: { type: 'pong', latency: 42 },
     jsonRepr: { type: 'pong', latency: 42 },
+  },
+  {
+    name: 'evt_session_created',
+    message: {
+      type: 'session_created',
+      session: {
+        id: '$5',
+        name: '3',
+        createdAt: 1708700500,
+        windows: [{
+          id: '@5',
+          name: 'bash',
+          index: 0,
+          active: true,
+          panes: [{
+            id: '%5',
+            index: 0,
+            active: true,
+            size: { cols: 80, rows: 24 },
+            title: 'bash',
+            currentCommand: 'bash',
+          }],
+        }],
+        lastActivityAt: 1708700500,
+        attached: false,
+      },
+    },
+    jsonRepr: {
+      type: 'session_created',
+      session: {
+        id: '$5',
+        name: '3',
+        createdAt: 1708700500,
+        windows: [{
+          id: '@5',
+          name: 'bash',
+          index: 0,
+          active: true,
+          panes: [{
+            id: '%5',
+            index: 0,
+            active: true,
+            size: { cols: 80, rows: 24 },
+            title: 'bash',
+            currentCommand: 'bash',
+          }],
+        }],
+        lastActivityAt: 1708700500,
+        attached: false,
+      },
+    },
   },
 ];
 
