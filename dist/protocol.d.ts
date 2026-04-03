@@ -32,10 +32,13 @@ export interface KillSessionRequest {
     type: 'kill_session';
     session: string;
 }
+export interface CreateSessionRequest {
+    type: 'create_session';
+}
 export interface PingRequest {
     type: 'ping';
 }
-export type HostRequest = ListSessionsRequest | AttachRequest | DetachRequest | InputRequest | ResizeRequest | KillSessionRequest | PingRequest;
+export type HostRequest = ListSessionsRequest | AttachRequest | DetachRequest | InputRequest | ResizeRequest | KillSessionRequest | CreateSessionRequest | PingRequest;
 export interface SessionsEvent {
     type: 'sessions';
     sessions: TmuxSession[];
@@ -64,6 +67,10 @@ export interface PaneClosedEvent {
     type: 'pane_closed';
     paneId: string;
 }
+export interface SessionCreatedEvent {
+    type: 'session_created';
+    session: TmuxSession;
+}
 export interface ErrorEvent {
     type: 'error';
     code: string;
@@ -73,7 +80,7 @@ export interface PongEvent {
     type: 'pong';
     latency: number;
 }
-export type HostEvent = SessionsEvent | OutputEvent | AttachedEvent | DetachedEvent | SessionEndedEvent | PaneClosedEvent | ErrorEvent | PongEvent;
+export type HostEvent = SessionsEvent | OutputEvent | AttachedEvent | DetachedEvent | SessionEndedEvent | PaneClosedEvent | SessionCreatedEvent | ErrorEvent | PongEvent;
 export interface TmuxSession {
     id: string;
     name: string;

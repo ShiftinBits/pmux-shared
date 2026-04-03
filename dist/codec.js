@@ -7,10 +7,10 @@
  */
 import { encode as msgpackEncode, decode as msgpackDecode } from '@msgpack/msgpack';
 const HOST_REQUEST_TYPE_TUPLE = [
-    'list_sessions', 'attach', 'detach', 'input', 'resize', 'kill_session', 'ping',
+    'list_sessions', 'attach', 'detach', 'input', 'resize', 'kill_session', 'create_session', 'ping',
 ];
 const HOST_EVENT_TYPE_TUPLE = [
-    'sessions', 'output', 'attached', 'detached', 'session_ended', 'pane_closed', 'error', 'pong',
+    'sessions', 'output', 'attached', 'detached', 'session_ended', 'pane_closed', 'session_created', 'error', 'pong',
 ];
 const HOST_REQUEST_TYPES = new Set(HOST_REQUEST_TYPE_TUPLE);
 const HOST_EVENT_TYPES = new Set(HOST_EVENT_TYPE_TUPLE);
@@ -72,6 +72,7 @@ function validateFields(msg) {
         case 'list_sessions':
         case 'detach':
         case 'ping':
+        case 'create_session':
             break;
         case 'attach':
             assertString(msg, 'attach', 'paneId');
@@ -114,6 +115,11 @@ function validateFields(msg) {
             break;
         case 'pane_closed':
             assertString(msg, 'pane_closed', 'paneId');
+            break;
+        case 'session_created':
+            if (typeof msg['session'] !== 'object' || msg['session'] === null) {
+                throw new Error('session_created: "session" must be an object');
+            }
             break;
         case 'error':
             assertString(msg, 'error', 'code', MAX_ERROR_CODE_LENGTH);
