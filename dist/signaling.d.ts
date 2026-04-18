@@ -59,4 +59,7 @@ export interface MobileNameUpdatedMessage {
     deviceId: string;
     name: string;
 }
-export type SignalingServerMessage = ConnectRequestMessage | SdpOfferMessage | SdpAnswerMessage | IceCandidateMessage | HostOnlineMessage | HostOfflineMessage | DeviceUnpairedMessage | ConnectionRejectedMessage | MobileNameUpdatedMessage;
+export interface PresenceAckMessage {
+    type: 'presence_ack';
+}
+export type SignalingServerMessage = ConnectRequestMessage | SdpOfferMessage | SdpAnswerMessage | IceCandidateMessage | HostOnlineMessage | HostOfflineMessage | DeviceUnpairedMessage | ConnectionRejectedMessage | MobileNameUpdatedMessage | PresenceAckMessage;
