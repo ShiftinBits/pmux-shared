@@ -82,6 +82,10 @@ export interface MobileNameUpdatedMessage {
   name: string;
 }
 
+export interface PresenceAckMessage {
+  type: 'presence_ack';
+}
+
 export type SignalingServerMessage =
   | ConnectRequestMessage
   | SdpOfferMessage
@@ -91,4 +95,5 @@ export type SignalingServerMessage =
   | HostOfflineMessage
   | DeviceUnpairedMessage
   | ConnectionRejectedMessage
-  | MobileNameUpdatedMessage;
+  | MobileNameUpdatedMessage
+  | PresenceAckMessage;
