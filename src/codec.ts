@@ -22,11 +22,11 @@ type AssertExhaustive<T extends string, U extends readonly T[]> =
   Exclude<T, U[number]> extends never ? true : never;
 
 const HOST_REQUEST_TYPE_TUPLE = [
-  'list_sessions', 'attach', 'detach', 'input', 'resize', 'kill_session', 'create_session', 'ping',
+  'list_sessions', 'attach', 'detach', 'input', 'resize', 'kill_session', 'create_session', 'ping', 'auth_response',
 ] as const satisfies readonly HostRequestType[];
 
 const HOST_EVENT_TYPE_TUPLE = [
-  'sessions', 'output', 'attached', 'detached', 'session_ended', 'pane_closed', 'session_created', 'error', 'pong',
+  'sessions', 'output', 'attached', 'detached', 'session_ended', 'pane_closed', 'session_created', 'error', 'pong', 'auth_challenge',
 ] as const satisfies readonly HostEventType[];
 
 // These type aliases exist solely to trigger compile errors when a union
@@ -45,6 +45,8 @@ export const MAX_STRING_ID_LENGTH = 255;
 export const MAX_ERROR_CODE_LENGTH = 255;
 export const MAX_ERROR_MESSAGE_LENGTH = 4096;
 export const MAX_INPUT_SIZE = 16 * 1024;
+/** Upper bound for auth nonce/mac blobs. Both are 32 bytes (HMAC-SHA256); 64 gives headroom. */
+export const MAX_AUTH_BLOB_SIZE = 64;
 export const MAX_OUTPUT_SIZE = 1024 * 1024;
 export const MIN_DIMENSION = 1;
 export const MAX_DIMENSION = 500;
@@ -129,6 +131,14 @@ function validateFields(msg: Record<string, unknown>): void {
 
     case 'input':
       assertUint8Array(msg, 'input', 'data', MAX_INPUT_SIZE);
+      break;
+
+    case 'auth_response':
+      assertUint8Array(msg, 'auth_response', 'mac', MAX_AUTH_BLOB_SIZE);
+      break;
+
+    case 'auth_challenge':
+      assertUint8Array(msg, 'auth_challenge', 'nonce', MAX_AUTH_BLOB_SIZE);
       break;
 
     case 'resize':
