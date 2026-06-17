@@ -6,6 +6,11 @@
  * through as raw binary — no base64 encoding.
  */
 import { encode as msgpackEncode, decode as msgpackDecode } from '@msgpack/msgpack';
+// NOTE: 'auth_response' is a handshake-only message. It must stay in this tuple
+// for decode-completeness and the AssertExhaustive check, so isHostRequest()
+// returns true for it. The security gate lives on the agent (Go), whose
+// IsRequest() deliberately EXCLUDES auth_response so a post-auth replay is
+// dropped; the mobile never decodes or re-sends it.
 const HOST_REQUEST_TYPE_TUPLE = [
     'list_sessions', 'attach', 'detach', 'input', 'resize', 'kill_session', 'create_session', 'ping', 'auth_response',
 ];
