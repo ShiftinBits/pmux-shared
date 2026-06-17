@@ -21,12 +21,17 @@ type HostEventType = HostEvent['type'];
 type AssertExhaustive<T extends string, U extends readonly T[]> =
   Exclude<T, U[number]> extends never ? true : never;
 
+// NOTE: 'auth_response' is a handshake-only message. It must stay in this tuple
+// for decode-completeness and the AssertExhaustive check, so isHostRequest()
+// returns true for it. The security gate lives on the agent (Go), whose
+// IsRequest() deliberately EXCLUDES auth_response so a post-auth replay is
+// dropped; the mobile never decodes or re-sends it.
 const HOST_REQUEST_TYPE_TUPLE = [
-  'list_sessions', 'attach', 'detach', 'input', 'resize', 'kill_session', 'create_session', 'ping',
+  'list_sessions', 'attach', 'detach', 'input', 'resize', 'kill_session', 'create_session', 'ping', 'auth_response',
 ] as const satisfies readonly HostRequestType[];
 
 const HOST_EVENT_TYPE_TUPLE = [
-  'sessions', 'output', 'attached', 'detached', 'session_ended', 'pane_closed', 'session_created', 'error', 'pong',
+  'sessions', 'output', 'attached', 'detached', 'session_ended', 'pane_closed', 'session_created', 'error', 'pong', 'auth_challenge',
 ] as const satisfies readonly HostEventType[];
 
 // These type aliases exist solely to trigger compile errors when a union
@@ -45,6 +50,11 @@ export const MAX_STRING_ID_LENGTH = 255;
 export const MAX_ERROR_CODE_LENGTH = 255;
 export const MAX_ERROR_MESSAGE_LENGTH = 4096;
 export const MAX_INPUT_SIZE = 16 * 1024;
+/**
+ * Upper bound for the base64-encoded auth nonce/mac strings. Both are 32 bytes
+ * (HMAC-SHA256) → ~44 base64 chars; 128 gives generous headroom.
+ */
+export const MAX_AUTH_BLOB_LENGTH = 128;
 export const MAX_OUTPUT_SIZE = 1024 * 1024;
 export const MIN_DIMENSION = 1;
 export const MAX_DIMENSION = 500;
@@ -129,6 +139,14 @@ function validateFields(msg: Record<string, unknown>): void {
 
     case 'input':
       assertUint8Array(msg, 'input', 'data', MAX_INPUT_SIZE);
+      break;
+
+    case 'auth_response':
+      assertString(msg, 'auth_response', 'mac', MAX_AUTH_BLOB_LENGTH);
+      break;
+
+    case 'auth_challenge':
+      assertString(msg, 'auth_challenge', 'nonce', MAX_AUTH_BLOB_LENGTH);
       break;
 
     case 'resize':

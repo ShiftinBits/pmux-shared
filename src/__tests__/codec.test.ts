@@ -132,6 +132,15 @@ describe('HostRequest round-trip', () => {
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });
+
+  it('encodes/decodes auth_response with base64 mac', () => {
+    const msg: HostRequest = {
+      type: 'auth_response',
+      mac: 'q6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6s=',
+    };
+    const result = roundTrip(msg);
+    expect(result).toEqual(msg);
+  });
 });
 
 // --- Round-trip tests for every HostEvent type ---
@@ -232,6 +241,15 @@ describe('HostEvent round-trip', () => {
 
   it('encodes/decodes pong', () => {
     const msg: HostEvent = { type: 'pong', latency: 42 };
+    const result = roundTrip(msg);
+    expect(result).toEqual(msg);
+  });
+
+  it('encodes/decodes auth_challenge with base64 nonce', () => {
+    const msg: HostEvent = {
+      type: 'auth_challenge',
+      nonce: 'WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo=',
+    };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
   });

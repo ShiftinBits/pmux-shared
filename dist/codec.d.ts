@@ -12,6 +12,11 @@ export declare const MAX_STRING_ID_LENGTH = 255;
 export declare const MAX_ERROR_CODE_LENGTH = 255;
 export declare const MAX_ERROR_MESSAGE_LENGTH = 4096;
 export declare const MAX_INPUT_SIZE: number;
+/**
+ * Upper bound for the base64-encoded auth nonce/mac strings. Both are 32 bytes
+ * (HMAC-SHA256) → ~44 base64 chars; 128 gives generous headroom.
+ */
+export declare const MAX_AUTH_BLOB_LENGTH = 128;
 export declare const MAX_OUTPUT_SIZE: number;
 export declare const MIN_DIMENSION = 1;
 export declare const MAX_DIMENSION = 500;

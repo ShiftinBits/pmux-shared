@@ -49,6 +49,19 @@ export interface PingRequest {
   type: 'ping';
 }
 
+/**
+ * Proof that the connecting peer possesses the X25519 shared secret derived at
+ * pairing. Sent in response to an AuthChallengeEvent as the first DataChannel
+ * message. `mac` is HMAC-SHA256(sharedSecret, challenge.nonce). The host rejects
+ * the connection if this is missing, malformed, or fails verification. This
+ * authenticates the peer independently of the (untrusted) signaling server.
+ */
+export interface AuthResponseRequest {
+  type: 'auth_response';
+  /** base64-encoded HMAC-SHA256(sharedSecret, challenge.nonce). */
+  mac: string;
+}
+
 export type HostRequest =
   | ListSessionsRequest
   | AttachRequest
@@ -57,7 +70,8 @@ export type HostRequest =
   | ResizeRequest
   | KillSessionRequest
   | CreateSessionRequest
-  | PingRequest;
+  | PingRequest
+  | AuthResponseRequest;
 
 // === Host → Mobile (Events) ===
 
@@ -111,6 +125,18 @@ export interface PongEvent {
   latency: number;
 }
 
+/**
+ * Per-connection challenge the host sends as the first DataChannel message.
+ * The mobile must reply with an AuthResponseRequest carrying
+ * HMAC-SHA256(sharedSecret, nonce). The random nonce binds the proof to this
+ * connection, preventing replay of a captured response across sessions.
+ */
+export interface AuthChallengeEvent {
+  type: 'auth_challenge';
+  /** base64-encoded per-connection random challenge nonce. */
+  nonce: string;
+}
+
 export type HostEvent =
   | SessionsEvent
   | OutputEvent
@@ -120,7 +146,8 @@ export type HostEvent =
   | PaneClosedEvent
   | SessionCreatedEvent
   | ErrorEvent
-  | PongEvent;
+  | PongEvent
+  | AuthChallengeEvent;
 
 // === tmux Data Types ===
 
