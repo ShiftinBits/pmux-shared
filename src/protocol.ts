@@ -58,7 +58,8 @@ export interface PingRequest {
  */
 export interface AuthResponseRequest {
   type: 'auth_response';
-  mac: Uint8Array;
+  /** base64-encoded HMAC-SHA256(sharedSecret, challenge.nonce). */
+  mac: string;
 }
 
 export type HostRequest =
@@ -132,7 +133,8 @@ export interface PongEvent {
  */
 export interface AuthChallengeEvent {
   type: 'auth_challenge';
-  nonce: Uint8Array;
+  /** base64-encoded per-connection random challenge nonce. */
+  nonce: string;
 }
 
 export type HostEvent =

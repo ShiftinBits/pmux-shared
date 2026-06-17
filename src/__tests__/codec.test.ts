@@ -133,10 +133,10 @@ describe('HostRequest round-trip', () => {
     expect(result).toEqual(msg);
   });
 
-  it('encodes/decodes auth_response with binary mac', () => {
+  it('encodes/decodes auth_response with base64 mac', () => {
     const msg: HostRequest = {
       type: 'auth_response',
-      mac: new Uint8Array(32).fill(0xab),
+      mac: 'q6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6s=',
     };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
@@ -245,10 +245,10 @@ describe('HostEvent round-trip', () => {
     expect(result).toEqual(msg);
   });
 
-  it('encodes/decodes auth_challenge with binary nonce', () => {
+  it('encodes/decodes auth_challenge with base64 nonce', () => {
     const msg: HostEvent = {
       type: 'auth_challenge',
-      nonce: new Uint8Array(32).fill(0x5a),
+      nonce: 'WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo=',
     };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
