@@ -20,6 +20,7 @@
     "clean": "rm -rf dist",
     "test": "vitest run",
     "test:watch": "vitest",
+    "prepublishOnly": "node scripts/check-pack.mjs",
     "fixtures": "tsx src/__tests__/fixtures/generate-fixtures.ts"
   },
   "devDependencies": {
