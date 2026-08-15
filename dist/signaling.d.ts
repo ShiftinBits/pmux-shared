@@ -54,6 +54,11 @@ export interface ConnectionRejectedMessage {
     type: 'connection_rejected';
     reason: 'not_paired' | 'already_connected';
 }
+export interface PeerUnavailableMessage {
+    type: 'peer_unavailable';
+    /** The relay target that is not connected to the signaling server. */
+    deviceId: string;
+}
 export interface MobileNameUpdatedMessage {
     type: 'mobile_name_updated';
     deviceId: string;
@@ -62,4 +67,4 @@ export interface MobileNameUpdatedMessage {
 export interface PresenceAckMessage {
     type: 'presence_ack';
 }
-export type SignalingServerMessage = ConnectRequestMessage | SdpOfferMessage | SdpAnswerMessage | IceCandidateMessage | HostOnlineMessage | HostOfflineMessage | DeviceUnpairedMessage | ConnectionRejectedMessage | MobileNameUpdatedMessage | PresenceAckMessage;
+export type SignalingServerMessage = ConnectRequestMessage | SdpOfferMessage | SdpAnswerMessage | IceCandidateMessage | HostOnlineMessage | HostOfflineMessage | DeviceUnpairedMessage | ConnectionRejectedMessage | PeerUnavailableMessage | MobileNameUpdatedMessage | PresenceAckMessage;
