@@ -15,7 +15,7 @@ const HOST_REQUEST_TYPE_TUPLE = [
     'list_sessions', 'attach', 'detach', 'input', 'resize', 'kill_session', 'create_session', 'ping', 'auth_response',
 ];
 const HOST_EVENT_TYPE_TUPLE = [
-    'sessions', 'output', 'attached', 'detached', 'session_ended', 'pane_closed', 'session_created', 'error', 'pong', 'auth_challenge',
+    'sessions', 'output', 'attached', 'detached', 'session_ended', 'pane_closed', 'session_created', 'error', 'pong', 'auth_challenge', 'auth_proof',
 ];
 const HOST_REQUEST_TYPES = new Set(HOST_REQUEST_TYPE_TUPLE);
 const HOST_EVENT_TYPES = new Set(HOST_EVENT_TYPE_TUPLE);
@@ -103,6 +103,9 @@ function validateFields(msg) {
             break;
         case 'auth_challenge':
             assertString(msg, 'auth_challenge', 'nonce', MAX_AUTH_BLOB_LENGTH);
+            break;
+        case 'auth_proof':
+            assertString(msg, 'auth_proof', 'mac', MAX_AUTH_BLOB_LENGTH);
             break;
         case 'resize':
             assertNumber(msg, 'resize', 'cols', MIN_DIMENSION, MAX_DIMENSION);

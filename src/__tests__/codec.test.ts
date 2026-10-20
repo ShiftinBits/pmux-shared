@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { encode as msgEncode } from '@msgpack/msgpack';
-import { encode, decode, isHostRequest, isHostEvent } from '../codec';
+import { encode, decode, isHostRequest, isHostEvent, MAX_AUTH_BLOB_LENGTH } from '../codec';
 import type {
   HostRequest,
   HostEvent,
@@ -254,6 +254,15 @@ describe('HostEvent round-trip', () => {
     expect(result).toEqual(msg);
   });
 
+  it('encodes/decodes auth_proof with base64 mac', () => {
+    const msg: HostEvent = {
+      type: 'auth_proof',
+      mac: 'q6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6s=',
+    };
+    const result = roundTrip(msg);
+    expect(result).toEqual(msg);
+  });
+
   it('encodes/decodes pane_closed', () => {
     const msg: HostEvent = { type: 'pane_closed', paneId: '%7' };
     const result = roundTrip(msg);
@@ -342,6 +351,7 @@ describe('type guards', () => {
       { type: 'pong', latency: 10 },
       { type: 'pane_closed', paneId: '%7' },
       { type: 'session_created', session: makeSampleSession() },
+      { type: 'auth_proof', mac: 'q6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6s=' },
     ];
     for (const evt of events) {
       expect(isHostEvent(evt)).toBe(true);
@@ -562,6 +572,28 @@ describe('decode structural validation', () => {
     it('rejects missing message', () => {
       expect(() => decodeMalformed({ type: 'error', code: 'ERR' }))
         .toThrow('error: "message" must be a string');
+    });
+  });
+
+  describe('auth_proof', () => {
+    it('rejects missing mac', () => {
+      expect(() => decodeMalformed({ type: 'auth_proof' }))
+        .toThrow('auth_proof: "mac" must be a string');
+    });
+
+    it('rejects non-string mac', () => {
+      expect(() => decodeMalformed({ type: 'auth_proof', mac: 123 }))
+        .toThrow('auth_proof: "mac" must be a string');
+    });
+
+    it('rejects mac over MAX_AUTH_BLOB_LENGTH', () => {
+      expect(() => decodeMalformed({ type: 'auth_proof', mac: 'A'.repeat(MAX_AUTH_BLOB_LENGTH + 1) }))
+        .toThrow('auth_proof: "mac"');
+    });
+
+    it('accepts mac at MAX_AUTH_BLOB_LENGTH', () => {
+      expect(() => decodeMalformed({ type: 'auth_proof', mac: 'A'.repeat(MAX_AUTH_BLOB_LENGTH) }))
+        .not.toThrow();
     });
   });
 

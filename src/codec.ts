@@ -31,7 +31,7 @@ const HOST_REQUEST_TYPE_TUPLE = [
 ] as const satisfies readonly HostRequestType[];
 
 const HOST_EVENT_TYPE_TUPLE = [
-  'sessions', 'output', 'attached', 'detached', 'session_ended', 'pane_closed', 'session_created', 'error', 'pong', 'auth_challenge',
+  'sessions', 'output', 'attached', 'detached', 'session_ended', 'pane_closed', 'session_created', 'error', 'pong', 'auth_challenge', 'auth_proof',
 ] as const satisfies readonly HostEventType[];
 
 // These type aliases exist solely to trigger compile errors when a union
@@ -147,6 +147,10 @@ function validateFields(msg: Record<string, unknown>): void {
 
     case 'auth_challenge':
       assertString(msg, 'auth_challenge', 'nonce', MAX_AUTH_BLOB_LENGTH);
+      break;
+
+    case 'auth_proof':
+      assertString(msg, 'auth_proof', 'mac', MAX_AUTH_BLOB_LENGTH);
       break;
 
     case 'resize':

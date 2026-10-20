@@ -137,6 +137,22 @@ export interface AuthChallengeEvent {
   nonce: string;
 }
 
+/**
+ * Host-to-mobile proof sent by the agent right after it verifies the mobile's
+ * AuthResponseRequest. The mobile must not treat the connection as usable until
+ * it verifies this proof.
+ *
+ * mac = base64(HMAC-SHA256(sharedSecret,
+ *   "pmux-host-proof-v1" || nonce || responseMAC || offerFP || answerFP)),
+ * where offerFP / answerFP are the 32-byte sha-256 DTLS fingerprints taken from
+ * the SDP offer and answer.
+ */
+export interface AuthProofEvent {
+  type: 'auth_proof';
+  /** base64-encoded host proof MAC. */
+  mac: string;
+}
+
 export type HostEvent =
   | SessionsEvent
   | OutputEvent
@@ -147,7 +163,8 @@ export type HostEvent =
   | SessionCreatedEvent
   | ErrorEvent
   | PongEvent
-  | AuthChallengeEvent;
+  | AuthChallengeEvent
+  | AuthProofEvent;
 
 // === tmux Data Types ===
 
