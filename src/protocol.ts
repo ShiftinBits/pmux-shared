@@ -142,10 +142,17 @@ export interface AuthChallengeEvent {
  * AuthResponseRequest. The mobile must not treat the connection as usable until
  * it verifies this proof.
  *
- * mac = base64(HMAC-SHA256(sharedSecret,
- *   "pmux-host-proof-v1" || nonce || responseMAC || offerFP || answerFP)),
- * where offerFP / answerFP are the 32-byte sha-256 DTLS fingerprints taken from
- * the SDP offer and answer.
+ * mac = base64(HMAC-SHA256(sharedSecret, input)), where `input` is the plain
+ * byte concatenation (no separators, no length prefixes) of, in this order:
+ *   1. label: the 18 ASCII bytes of "pmux-host-proof-v1"
+ *   2. nonce: the base64-DECODED bytes of AuthChallengeEvent.nonce
+ *   3. responseMAC: the base64-DECODED 32 bytes of AuthResponseRequest.mac
+ *   4. offerFP: the 32 raw bytes of the sha-256 DTLS fingerprint from the SDP offer
+ *   5. answerFP: the 32 raw bytes of the sha-256 DTLS fingerprint from the SDP answer
+ * The base64 text is never HMAC'd directly; only decoded bytes are. The
+ * fingerprints are the raw digest bytes, not the colon-separated hex text from
+ * the SDP. Because every field after the nonce is fixed-width, the layout is
+ * unambiguous.
  */
 export interface AuthProofEvent {
   type: 'auth_proof';
