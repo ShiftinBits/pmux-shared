@@ -73,7 +73,11 @@ export interface DeviceUnpairedMessage {
 
 export interface ConnectionRejectedMessage {
   type: 'connection_rejected';
-  reason: 'not_paired' | 'already_connected';
+  /**
+   * 'secret_unavailable': the host is paired with this device but cannot load
+   * the pairing shared secret, so reconnect or re-pair.
+   */
+  reason: 'not_paired' | 'already_connected' | 'secret_unavailable';
 }
 
 export interface PeerUnavailableMessage {
