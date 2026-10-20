@@ -180,6 +180,11 @@ const fixtures: Fixture[] = [
     jsonRepr: { type: 'pong', latency: 42 },
   },
   {
+    name: 'auth_proof',
+    message: { type: 'auth_proof', mac: 'q6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6s=' },
+    jsonRepr: { type: 'auth_proof', mac: 'q6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6s=' },
+  },
+  {
     name: 'evt_session_created',
     message: {
       type: 'session_created',
