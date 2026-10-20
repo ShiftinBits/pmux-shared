@@ -133,10 +133,11 @@ describe('HostRequest round-trip', () => {
     expect(result).toEqual(msg);
   });
 
-  it('encodes/decodes auth_response with base64 mac', () => {
+  it('encodes/decodes auth_response with base64 mac and nonce', () => {
     const msg: HostRequest = {
       type: 'auth_response',
       mac: 'q6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6s=',
+      nonce: 'zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMw=',
     };
     const result = roundTrip(msg);
     expect(result).toEqual(msg);
@@ -254,6 +255,15 @@ describe('HostEvent round-trip', () => {
     expect(result).toEqual(msg);
   });
 
+  it('encodes/decodes auth_confirm with base64 mac', () => {
+    const msg: HostEvent = {
+      type: 'auth_confirm',
+      mac: '7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e0=',
+    };
+    const result = roundTrip(msg);
+    expect(result).toEqual(msg);
+  });
+
   it('encodes/decodes pane_closed', () => {
     const msg: HostEvent = { type: 'pane_closed', paneId: '%7' };
     const result = roundTrip(msg);
@@ -324,6 +334,7 @@ describe('type guards', () => {
       { type: 'kill_session', session: '$1' },
       { type: 'create_session' },
       { type: 'ping' },
+      { type: 'auth_response', mac: 'bWFj', nonce: 'bm9uY2U=' },
     ];
     for (const req of requests) {
       expect(isHostRequest(req)).toBe(true);
@@ -342,6 +353,8 @@ describe('type guards', () => {
       { type: 'pong', latency: 10 },
       { type: 'pane_closed', paneId: '%7' },
       { type: 'session_created', session: makeSampleSession() },
+      { type: 'auth_challenge', nonce: 'bm9uY2U=' },
+      { type: 'auth_confirm', mac: 'bWFj' },
     ];
     for (const evt of events) {
       expect(isHostEvent(evt)).toBe(true);
@@ -574,6 +587,74 @@ describe('decode structural validation', () => {
     it('rejects non-number latency', () => {
       expect(() => decodeMalformed({ type: 'pong', latency: '42' }))
         .toThrow('pong: "latency" must be a finite number');
+    });
+  });
+
+  describe('auth_response', () => {
+    const mac = 'q6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6s=';
+    const nonce = 'zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMw=';
+
+    it('accepts mac and nonce', () => {
+      expect(() => decodeMalformed({ type: 'auth_response', mac, nonce })).not.toThrow();
+    });
+
+    it('rejects missing nonce', () => {
+      expect(() => decodeMalformed({ type: 'auth_response', mac }))
+        .toThrow('auth_response: "nonce" must be a string');
+    });
+
+    it('rejects non-string nonce', () => {
+      expect(() => decodeMalformed({ type: 'auth_response', mac, nonce: 42 }))
+        .toThrow('auth_response: "nonce" must be a string');
+      expect(() => decodeMalformed({ type: 'auth_response', mac, nonce: new Uint8Array(32) }))
+        .toThrow('auth_response: "nonce" must be a string');
+    });
+
+    it('rejects empty nonce', () => {
+      expect(() => decodeMalformed({ type: 'auth_response', mac, nonce: '' }))
+        .toThrow('auth_response: "nonce" must not be empty');
+    });
+
+    it('rejects over-length nonce', () => {
+      expect(() => decodeMalformed({ type: 'auth_response', mac, nonce: 'n'.repeat(129) }))
+        .toThrow('auth_response: "nonce" exceeds maximum length of 128');
+    });
+
+    it('accepts nonce at maximum length', () => {
+      expect(() => decodeMalformed({ type: 'auth_response', mac, nonce: 'n'.repeat(128) }))
+        .not.toThrow();
+    });
+
+    it('rejects missing mac', () => {
+      expect(() => decodeMalformed({ type: 'auth_response', nonce }))
+        .toThrow('auth_response: "mac" must be a string');
+    });
+  });
+
+  describe('auth_confirm', () => {
+    it('rejects missing mac', () => {
+      expect(() => decodeMalformed({ type: 'auth_confirm' }))
+        .toThrow('auth_confirm: "mac" must be a string');
+    });
+
+    it('rejects non-string mac', () => {
+      expect(() => decodeMalformed({ type: 'auth_confirm', mac: 42 }))
+        .toThrow('auth_confirm: "mac" must be a string');
+    });
+
+    it('rejects empty mac', () => {
+      expect(() => decodeMalformed({ type: 'auth_confirm', mac: '' }))
+        .toThrow('auth_confirm: "mac" must not be empty');
+    });
+
+    it('rejects over-length mac', () => {
+      expect(() => decodeMalformed({ type: 'auth_confirm', mac: 'm'.repeat(129) }))
+        .toThrow('auth_confirm: "mac" exceeds maximum length of 128');
+    });
+
+    it('accepts mac at maximum length', () => {
+      expect(() => decodeMalformed({ type: 'auth_confirm', mac: 'm'.repeat(128) }))
+        .not.toThrow();
     });
   });
 
