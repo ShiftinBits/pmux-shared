@@ -15,7 +15,7 @@ const HOST_REQUEST_TYPE_TUPLE = [
     'list_sessions', 'attach', 'detach', 'input', 'resize', 'kill_session', 'create_session', 'ping', 'auth_response',
 ];
 const HOST_EVENT_TYPE_TUPLE = [
-    'sessions', 'output', 'attached', 'detached', 'session_ended', 'pane_closed', 'session_created', 'error', 'pong', 'auth_challenge', 'auth_proof',
+    'sessions', 'output', 'attached', 'detached', 'session_ended', 'pane_closed', 'session_created', 'error', 'pong', 'auth_challenge', 'auth_confirm',
 ];
 const HOST_REQUEST_TYPES = new Set(HOST_REQUEST_TYPE_TUPLE);
 const HOST_EVENT_TYPES = new Set(HOST_EVENT_TYPE_TUPLE);
@@ -45,6 +45,12 @@ function assertString(msg, type, field, maxLength = MAX_STRING_ID_LENGTH) {
     }
     if (msg[field].length > maxLength) {
         throw new Error(`${type}: "${field}" exceeds maximum length of ${maxLength}`);
+    }
+}
+function assertNonEmptyString(msg, type, field, maxLength = MAX_STRING_ID_LENGTH) {
+    assertString(msg, type, field, maxLength);
+    if (msg[field].length === 0) {
+        throw new Error(`${type}: "${field}" must not be empty`);
     }
 }
 function assertNumber(msg, type, field, min, max) {
@@ -100,12 +106,13 @@ function validateFields(msg) {
             break;
         case 'auth_response':
             assertString(msg, 'auth_response', 'mac', MAX_AUTH_BLOB_LENGTH);
+            assertNonEmptyString(msg, 'auth_response', 'nonce', MAX_AUTH_BLOB_LENGTH);
             break;
         case 'auth_challenge':
             assertString(msg, 'auth_challenge', 'nonce', MAX_AUTH_BLOB_LENGTH);
             break;
-        case 'auth_proof':
-            assertString(msg, 'auth_proof', 'mac', MAX_AUTH_BLOB_LENGTH);
+        case 'auth_confirm':
+            assertNonEmptyString(msg, 'auth_confirm', 'mac', MAX_AUTH_BLOB_LENGTH);
             break;
         case 'resize':
             assertNumber(msg, 'resize', 'cols', MIN_DIMENSION, MAX_DIMENSION);

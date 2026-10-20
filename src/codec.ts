@@ -31,7 +31,7 @@ const HOST_REQUEST_TYPE_TUPLE = [
 ] as const satisfies readonly HostRequestType[];
 
 const HOST_EVENT_TYPE_TUPLE = [
-  'sessions', 'output', 'attached', 'detached', 'session_ended', 'pane_closed', 'session_created', 'error', 'pong', 'auth_challenge', 'auth_proof',
+  'sessions', 'output', 'attached', 'detached', 'session_ended', 'pane_closed', 'session_created', 'error', 'pong', 'auth_challenge', 'auth_confirm',
 ] as const satisfies readonly HostEventType[];
 
 // These type aliases exist solely to trigger compile errors when a union
@@ -75,6 +75,16 @@ function assertString(
   }
   if ((msg[field] as string).length > maxLength) {
     throw new Error(`${type}: "${field}" exceeds maximum length of ${maxLength}`);
+  }
+}
+
+function assertNonEmptyString(
+  msg: Record<string, unknown>, type: string, field: string,
+  maxLength: number = MAX_STRING_ID_LENGTH,
+): void {
+  assertString(msg, type, field, maxLength);
+  if ((msg[field] as string).length === 0) {
+    throw new Error(`${type}: "${field}" must not be empty`);
   }
 }
 
@@ -143,14 +153,15 @@ function validateFields(msg: Record<string, unknown>): void {
 
     case 'auth_response':
       assertString(msg, 'auth_response', 'mac', MAX_AUTH_BLOB_LENGTH);
+      assertNonEmptyString(msg, 'auth_response', 'nonce', MAX_AUTH_BLOB_LENGTH);
       break;
 
     case 'auth_challenge':
       assertString(msg, 'auth_challenge', 'nonce', MAX_AUTH_BLOB_LENGTH);
       break;
 
-    case 'auth_proof':
-      assertString(msg, 'auth_proof', 'mac', MAX_AUTH_BLOB_LENGTH);
+    case 'auth_confirm':
+      assertNonEmptyString(msg, 'auth_confirm', 'mac', MAX_AUTH_BLOB_LENGTH);
       break;
 
     case 'resize':

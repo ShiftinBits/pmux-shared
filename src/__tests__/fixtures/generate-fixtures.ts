@@ -68,6 +68,19 @@ const fixtures: Fixture[] = [
     message: { type: 'create_session' },
     jsonRepr: { type: 'create_session' },
   },
+  {
+    name: 'req_auth_response',
+    message: {
+      type: 'auth_response',
+      mac: 'q6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6s=',
+      nonce: 'zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMw=',
+    },
+    jsonRepr: {
+      type: 'auth_response',
+      mac: 'q6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6s=',
+      nonce: 'zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMw=',
+    },
+  },
 
   // --- HostEvent fixtures ---
   {
@@ -180,9 +193,14 @@ const fixtures: Fixture[] = [
     jsonRepr: { type: 'pong', latency: 42 },
   },
   {
-    name: 'auth_proof',
-    message: { type: 'auth_proof', mac: 'q6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6s=' },
-    jsonRepr: { type: 'auth_proof', mac: 'q6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq6s=' },
+    name: 'evt_auth_challenge',
+    message: { type: 'auth_challenge', nonce: 'WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo=' },
+    jsonRepr: { type: 'auth_challenge', nonce: 'WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo=' },
+  },
+  {
+    name: 'evt_auth_confirm',
+    message: { type: 'auth_confirm', mac: '7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e0=' },
+    jsonRepr: { type: 'auth_confirm', mac: '7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e0=' },
   },
   {
     name: 'evt_session_created',

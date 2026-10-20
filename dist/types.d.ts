@@ -15,6 +15,12 @@ export interface PairingData {
     hostX25519PublicKey: string;
     hostDeviceId: string;
     serverUrl: string;
+    /**
+     * One-time pairing secret: 16 chars from the pairing alphabet
+     * (ABCDEFGHJKLMNPQRSTUVWXYZ23456789). Travels only in the QR code and the
+     * manual pairing code; never sent to the server and never persisted.
+     */
+    pairingSecret: string;
 }
 export interface TurnCredentials {
     urls: string[];
