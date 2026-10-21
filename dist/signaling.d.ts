@@ -34,7 +34,23 @@ export interface IceCandidateMessage {
     sdpMid?: string;
     sdpMLineIndex?: number;
 }
-export type SignalingClientMessage = AuthMessage | PresenceMessage | ConnectRequestMessage | SdpOfferMessage | SdpAnswerMessage | IceCandidateMessage;
+/**
+ * The host verified the pairMac of the pair_complete for this mobile, so the
+ * server may commit the pairing.
+ */
+export interface PairAcceptMessage {
+    type: 'pair_accept';
+    mobileDeviceId: string;
+}
+/**
+ * The host rejected the pair_complete for this mobile (for example, the
+ * pairMac did not verify), so the server must not commit the pairing.
+ */
+export interface PairRejectMessage {
+    type: 'pair_reject';
+    mobileDeviceId: string;
+}
+export type SignalingClientMessage = AuthMessage | PresenceMessage | ConnectRequestMessage | SdpOfferMessage | SdpAnswerMessage | IceCandidateMessage | PairAcceptMessage | PairRejectMessage;
 export interface HostOnlineMessage {
     type: 'host_online';
     deviceId: string;
@@ -71,4 +87,25 @@ export interface MobileNameUpdatedMessage {
 export interface PresenceAckMessage {
     type: 'presence_ack';
 }
-export type SignalingServerMessage = ConnectRequestMessage | SdpOfferMessage | SdpAnswerMessage | IceCandidateMessage | HostOnlineMessage | HostOfflineMessage | DeviceUnpairedMessage | ConnectionRejectedMessage | PeerUnavailableMessage | MobileNameUpdatedMessage | PresenceAckMessage;
+/**
+ * Relays a mobile's POST /auth/pair/complete to the host. pairMac is opaque
+ * to the server; the host verifies it before answering with pair_accept or
+ * pair_reject.
+ */
+export interface PairCompleteMessage {
+    type: 'pair_complete';
+    mobileDeviceId: string;
+    mobileX25519PublicKey: string;
+    mobileName?: string;
+    pairMac?: string;
+}
+/**
+ * Answers the host's pair_accept. ok is true only when the server committed
+ * the pairing; the host stores the shared secret only then.
+ */
+export interface PairResultMessage {
+    type: 'pair_result';
+    mobileDeviceId: string;
+    ok: boolean;
+}
+export type SignalingServerMessage = ConnectRequestMessage | SdpOfferMessage | SdpAnswerMessage | IceCandidateMessage | HostOnlineMessage | HostOfflineMessage | DeviceUnpairedMessage | ConnectionRejectedMessage | PeerUnavailableMessage | MobileNameUpdatedMessage | PresenceAckMessage | PairCompleteMessage | PairResultMessage;
