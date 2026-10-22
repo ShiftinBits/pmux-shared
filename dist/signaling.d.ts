@@ -16,11 +16,15 @@ export interface PresenceMessage {
 export interface ConnectRequestMessage {
     type: 'connect_request';
     targetDeviceId: string;
+    /** Mobile-generated per connect_request (32 hex chars); the host echoes it on sdp_offer/ice_candidate. Absent from older clients and servers. */
+    attemptId?: string;
 }
 export interface SdpOfferMessage {
     type: 'sdp_offer';
     sdp: string;
     targetDeviceId: string;
+    /** Echoed by the host from the connect_request it answers. Absent from older agents and servers. */
+    attemptId?: string;
 }
 export interface SdpAnswerMessage {
     type: 'sdp_answer';
@@ -33,6 +37,8 @@ export interface IceCandidateMessage {
     targetDeviceId: string;
     sdpMid?: string;
     sdpMLineIndex?: number;
+    /** Echoed by the host from the connect_request it answers. Absent from older agents and servers. */
+    attemptId?: string;
 }
 /**
  * The host verified the pairMac of the pair_complete for this mobile, so the
@@ -55,10 +61,14 @@ export interface HostOnlineMessage {
     type: 'host_online';
     deviceId: string;
     name?: string;
+    /** Server send time, ms since Unix epoch. Absent from older servers. */
+    ts?: number;
 }
 export interface HostOfflineMessage {
     type: 'host_offline';
     deviceId: string;
+    /** Server send time, ms since Unix epoch. Absent from older servers. */
+    ts?: number;
 }
 export interface DeviceUnpairedMessage {
     type: 'device_unpaired';
@@ -78,6 +88,12 @@ export interface PeerUnavailableMessage {
     type: 'peer_unavailable';
     /** The relay target that is not connected to the signaling server. */
     deviceId: string;
+    /**
+     * The connect attempt this applies to: taken from the signaling session on
+     * expiry, or reflected from the sender's relayed message. Absent from older
+     * servers.
+     */
+    attemptId?: string;
 }
 export interface MobileNameUpdatedMessage {
     type: 'mobile_name_updated';

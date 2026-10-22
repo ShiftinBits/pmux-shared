@@ -43,7 +43,7 @@ Both TS consumers depend on `github:ShiftinBits/pmux-shared#main`, pinned to a S
 
 ## Signaling Messages
 
-Go mirror is a single flat `SignalingMessage` struct in `packages/agent/internal/webrtc/signaling.go` (union of all fields); type dispatch is in `peer.go`. Server→mobile-only messages (`host_online`, `host_offline`, `device_unpaired`, `peer_unavailable`) have no Go handling by design. No fixtures exist for signaling, so parity is unchecked. Update SPEC §5.1.
+Go mirror is a single flat `SignalingMessage` struct in `packages/agent/internal/webrtc/signaling.go` (union of all fields); type dispatch is in `peer.go`. Server→mobile-only messages (`host_online`, `host_offline`, `device_unpaired`) have no Go handling by design. No fixtures exist for signaling, so parity is unchecked. Update SPEC §5.1.
 
 ## Gotchas
 
