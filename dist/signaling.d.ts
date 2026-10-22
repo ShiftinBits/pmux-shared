@@ -16,7 +16,7 @@ export interface PresenceMessage {
 export interface ConnectRequestMessage {
     type: 'connect_request';
     targetDeviceId: string;
-    /** Mobile-generated per connect_request (32 hex chars); the host echoes it on sdp_offer/ice_candidate. Absent from older clients and servers. */
+    /** Mobile-generated per connect_request (32 hex chars); both peers echo it on sdp_offer/sdp_answer/ice_candidate. Absent from older clients and servers. */
     attemptId?: string;
 }
 export interface SdpOfferMessage {
@@ -30,6 +30,8 @@ export interface SdpAnswerMessage {
     type: 'sdp_answer';
     sdp: string;
     targetDeviceId: string;
+    /** Echoed by the mobile from its current connect_request. Absent from older clients and servers. */
+    attemptId?: string;
 }
 export interface IceCandidateMessage {
     type: 'ice_candidate';
@@ -37,7 +39,7 @@ export interface IceCandidateMessage {
     targetDeviceId: string;
     sdpMid?: string;
     sdpMLineIndex?: number;
-    /** Echoed by the host from the connect_request it answers. Absent from older agents and servers. */
+    /** The connect attempt the candidate belongs to, echoed by either peer. Absent from older clients and servers. */
     attemptId?: string;
 }
 /**
