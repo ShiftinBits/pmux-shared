@@ -255,6 +255,16 @@ describe('HostEvent round-trip', () => {
     expect(result).toEqual(msg);
   });
 
+  it('encodes/decodes auth_challenge with auth protocol version', () => {
+    const msg: HostEvent = {
+      type: 'auth_challenge',
+      nonce: 'WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo=',
+      v: 2,
+    };
+    const result = roundTrip(msg);
+    expect(result).toEqual(msg);
+  });
+
   it('encodes/decodes auth_confirm with base64 mac', () => {
     const msg: HostEvent = {
       type: 'auth_confirm',
@@ -628,6 +638,38 @@ describe('decode structural validation', () => {
     it('rejects missing mac', () => {
       expect(() => decodeMalformed({ type: 'auth_response', nonce }))
         .toThrow('auth_response: "mac" must be a string');
+    });
+  });
+
+  describe('auth_challenge', () => {
+    const nonce = 'WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo=';
+
+    it('accepts v: 2', () => {
+      expect(() => decodeMalformed({ type: 'auth_challenge', nonce, v: 2 })).not.toThrow();
+    });
+
+    it('accepts missing v', () => {
+      expect(() => decodeMalformed({ type: 'auth_challenge', nonce })).not.toThrow();
+    });
+
+    it('rejects non-integer v', () => {
+      expect(() => decodeMalformed({ type: 'auth_challenge', nonce, v: 1.5 }))
+        .toThrow('auth_challenge: "v" must be an integer');
+    });
+
+    it('rejects non-number v', () => {
+      expect(() => decodeMalformed({ type: 'auth_challenge', nonce, v: '2' }))
+        .toThrow('auth_challenge: "v" must be an integer');
+    });
+
+    it('rejects v below 1', () => {
+      expect(() => decodeMalformed({ type: 'auth_challenge', nonce, v: 0 }))
+        .toThrow('auth_challenge: "v" must be at least 1');
+    });
+
+    it('rejects missing nonce', () => {
+      expect(() => decodeMalformed({ type: 'auth_challenge', v: 2 }))
+        .toThrow('auth_challenge: "nonce" must be a string');
     });
   });
 

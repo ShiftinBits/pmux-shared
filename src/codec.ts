@@ -104,6 +104,18 @@ function assertNumber(
   }
 }
 
+function assertInteger(
+  msg: Record<string, unknown>, type: string, field: string,
+  min: number,
+): void {
+  if (!Number.isInteger(msg[field])) {
+    throw new Error(`${type}: "${field}" must be an integer`);
+  }
+  if ((msg[field] as number) < min) {
+    throw new Error(`${type}: "${field}" must be at least ${min}`);
+  }
+}
+
 function assertUint8Array(
   msg: Record<string, unknown>, type: string, field: string,
   maxSize?: number,
@@ -158,6 +170,9 @@ function validateFields(msg: Record<string, unknown>): void {
 
     case 'auth_challenge':
       assertString(msg, 'auth_challenge', 'nonce', MAX_AUTH_BLOB_LENGTH);
+      if (msg['v'] !== undefined) {
+        assertInteger(msg, 'auth_challenge', 'v', 1);
+      }
       break;
 
     case 'auth_confirm':

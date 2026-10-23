@@ -194,8 +194,8 @@ const fixtures: Fixture[] = [
   },
   {
     name: 'evt_auth_challenge',
-    message: { type: 'auth_challenge', nonce: 'WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo=' },
-    jsonRepr: { type: 'auth_challenge', nonce: 'WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo=' },
+    message: { type: 'auth_challenge', nonce: 'WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo=', v: 2 },
+    jsonRepr: { type: 'auth_challenge', nonce: 'WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo=', v: 2 },
   },
   {
     name: 'evt_auth_confirm',

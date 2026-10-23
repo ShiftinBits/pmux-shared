@@ -1,4 +1,5 @@
 {
   "type": "auth_challenge",
-  "nonce": "WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo="
+  "nonce": "WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlo=",
+  "v": 2
 }
